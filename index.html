@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>SRV // Core Hub</title>
 <meta name="theme-color" content="#0b0d10">
+
 <style>
 :root {
   --bg: #0b0d10;
@@ -18,6 +19,7 @@
   --danger: #f87171;
   --font: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
+
 body.light {
   --bg: #f1f5f9;
   --surface: #ffffff;
@@ -29,214 +31,728 @@ body.light {
   --muted: #64748b;
   --danger: #dc2626;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.5;
   padding-bottom: 60px;
   transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
 }
-body.modal-open { overflow: hidden; }
+
+body.modal-open {
+  overflow: hidden;
+}
+
 body::before {
   content: "";
-  position: fixed; inset: 0;
-  background-image: 
+  position: fixed;
+  inset: 0;
+  background-image:
     linear-gradient(rgba(34,211,160,0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(34,211,160,0.03) 1px, transparent 1px);
   background-size: 42px 42px;
-  pointer-events: none; z-index: -2;
+  pointer-events: none;
+  z-index: -2;
 }
+
 body.light::before {
-  background-image: 
+  background-image:
     linear-gradient(rgba(13,148,136,0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(13,148,136,0.05) 1px, transparent 1px);
 }
 
-/* NAV */
+/* =========================
+   NAV
+========================= */
+
 nav {
   background: rgba(11,13,16,0.92);
   backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
   padding: 12px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky; top: 0; z-index: 1000;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   transition: background 0.3s;
 }
-body.light nav { background: rgba(255,255,255,0.92); }
-.brand {
-  display: flex; align-items: center; gap: 10px;
-  color: var(--text); text-decoration: none;
-  font-family: var(--font); font-weight: 700; font-size: 14px;
+
+body.light nav {
+  background: rgba(255,255,255,0.92);
 }
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  text-decoration: none;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 14px;
+  min-width: 0;
+}
+
 .logo {
-  width: 36px; height: 36px;
+  width: 36px;
+  height: 36px;
   background: linear-gradient(135deg, #0f172a, #134e4a);
   border: 1px solid var(--accent);
   border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 0 18px var(--accent-glow);
   animation: logoBreath 3.5s ease-in-out infinite;
+  flex-shrink: 0;
 }
-body.light .logo { background: linear-gradient(135deg, #ccfbf1, #99f6e4); }
+
+body.light .logo {
+  background: linear-gradient(135deg, #ccfbf1, #99f6e4);
+}
+
 @keyframes logoBreath {
-  0%,100% { box-shadow: 0 0 12px var(--accent-glow); }
-  50% { box-shadow: 0 0 24px rgba(34,211,160,0.55); }
+  0%,100% {
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+
+  50% {
+    box-shadow: 0 0 24px rgba(34,211,160,0.55);
+  }
 }
-.logo svg { width: 18px; height: 18px; fill: var(--accent); }
-.nav-right { display: flex; align-items: center; gap: 10px; }
+
+.logo svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--accent);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .menu-toggle {
-  display: none; background: none; border: none; cursor: pointer;
-  width: 28px; height: 22px; position: relative; z-index: 1001;
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 30px;
+  height: 24px;
+  position: relative;
+  z-index: 1001;
+  padding: 0;
 }
+
 .menu-toggle span {
-  display: block; position: absolute; height: 2px; width: 100%;
-  background: var(--text); border-radius: 2px;
+  display: block;
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background: var(--text);
+  border-radius: 2px;
   transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
 }
-.menu-toggle span:nth-child(1) { top: 0; }
-.menu-toggle span:nth-child(2) { top: 10px; }
-.menu-toggle span:nth-child(3) { top: 20px; }
-.menu-toggle.active span:nth-child(1) { transform: rotate(45deg); top: 10px; background: var(--accent); }
-.menu-toggle.active span:nth-child(2) { opacity: 0; }
-.menu-toggle.active span:nth-child(3) { transform: rotate(-45deg); top: 10px; background: var(--accent); }
-.nav-links { list-style: none; display: flex; gap: 18px; align-items: center; }
-.nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; font-family: var(--font); }
-.nav-links a:hover, .nav-links a.active { color: var(--accent); }
 
-.container { max-width: 840px; margin: 0 auto; padding: 16px; }
+.menu-toggle span:nth-child(1) {
+  top: 0;
+}
 
-/* HERO */
+.menu-toggle span:nth-child(2) {
+  top: 11px;
+}
+
+.menu-toggle span:nth-child(3) {
+  top: 22px;
+}
+
+.menu-toggle.active span:nth-child(1) {
+  transform: rotate(45deg);
+  top: 11px;
+  background: var(--accent);
+}
+
+.menu-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+  transform: rotate(-45deg);
+  top: 11px;
+  background: var(--accent);
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 13px;
+  font-family: var(--font);
+  transition: color 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--accent);
+}
+
+/* =========================
+   CONTAINER
+========================= */
+
+.container {
+  width: 100%;
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* =========================
+   HERO
+========================= */
+
 .hero {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 26px 16px 22px; text-align: center;
-  margin-bottom: 18px; position: relative; overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 26px 16px 22px;
+  text-align: center;
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
 }
+
 .hero::before {
-  content: "root@srv-core:\~#";
-  position: absolute; top: 9px; left: 13px;
-  font-family: var(--font); font-size: 10px; color: var(--muted); opacity: 0.45;
+  content: "root@srv-core:\\~#";
+  position: absolute;
+  top: 9px;
+  left: 13px;
+  font-family: var(--font);
+  font-size: 10px;
+  color: var(--muted);
+  opacity: 0.45;
 }
-.hero h1 { font-family: var(--font); font-size: 24px; font-weight: 700; margin-bottom: 6px; min-height: 32px; }
-.hero h1 span { color: var(--accent); }
-.hero p { color: var(--muted); font-size: 13px; font-family: var(--font); max-width: 420px; margin: 0 auto 14px; }
-.stats { display: flex; justify-content: center; gap: 22px; font-family: var(--font); font-size: 12px; color: var(--muted); }
-.stats strong { color: var(--accent); }
+
+.hero h1 {
+  font-family: var(--font);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  min-height: 32px;
+  overflow-wrap: anywhere;
+}
+
+.hero h1 span {
+  color: var(--accent);
+}
+
+.hero p {
+  color: var(--muted);
+  font-size: 13px;
+  font-family: var(--font);
+  max-width: 420px;
+  margin: 0 auto 14px;
+}
+
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+  font-family: var(--font);
+  font-size: 12px;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.stats strong {
+  color: var(--accent);
+}
+
+/* =========================
+   SECTION
+========================= */
 
 .section-title {
-  font-family: var(--font); font-size: 11px; color: var(--muted);
-  text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 11px;
-  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  margin-bottom: 11px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
-.section-title::before { content: "$"; color: var(--accent); }
 
-.discover { display: grid; grid-template-columns: 1.45fr 1fr; gap: 12px; margin-bottom: 18px; }
-.featured {
-  background: linear-gradient(145deg, rgba(34,211,160,0.11), rgba(34,211,160,0.02));
-  border: 1px solid rgba(34,211,160,0.28); border-radius: 12px; padding: 16px; position: relative;
+.section-title::before {
+  content: "$";
+  color: var(--accent);
 }
+
+/* =========================
+   DISCOVER
+========================= */
+
+.discover {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+  min-width: 0;
+}
+
+.featured {
+  background: linear-gradient(
+    145deg,
+    rgba(34,211,160,0.11),
+    rgba(34,211,160,0.02)
+  );
+  border: 1px solid rgba(34,211,160,0.28);
+  border-radius: 12px;
+  padding: 16px;
+  position: relative;
+  min-width: 0;
+  overflow: visible;
+}
+
 body.light .featured {
-  background: linear-gradient(145deg, rgba(13,148,136,0.08), rgba(13,148,136,0.02));
+  background: linear-gradient(
+    145deg,
+    rgba(13,148,136,0.08),
+    rgba(13,148,136,0.02)
+  );
   border-color: rgba(13,148,136,0.25);
 }
+
 .featured .tag {
-  position: absolute; top: 11px; right: 11px; font-size: 9px; font-family: var(--font);
-  background: rgba(34,211,160,0.15); color: var(--accent); padding: 2px 8px; border-radius: 20px;
+  position: absolute;
+  top: 11px;
+  right: 11px;
+  font-size: 9px;
+  font-family: var(--font);
+  background: rgba(34,211,160,0.15);
+  color: var(--accent);
+  padding: 2px 8px;
+  border-radius: 20px;
 }
-.featured h3 { font-family: var(--font); font-size: 17px; margin-bottom: 4px; }
-.featured .meta { font-size: 12px; color: var(--muted); font-family: var(--font); margin-bottom: 12px; }
-.featured .btns { display: flex; gap: 8px; }
-.side { display: flex; flex-direction: column; gap: 10px; }
+
+.featured h3 {
+  font-family: var(--font);
+  font-size: 17px;
+  margin-bottom: 4px;
+  padding-right: 80px;
+  overflow-wrap: anywhere;
+}
+
+.featured .meta {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--font);
+  margin-bottom: 12px;
+  overflow-wrap: anywhere;
+}
+
+.featured .btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
 .mini {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-  padding: 13px; cursor: pointer; transition: 0.2s;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+  min-width: 0;
 }
-.mini:hover { border-color: var(--accent); transform: translateY(-1px); }
-.mini .label { font-size: 10px; color: var(--muted); font-family: var(--font); text-transform: uppercase; margin-bottom: 3px; }
-.mini .name { font-family: var(--font); font-size: 14px; font-weight: 600; }
-.mini .sub { font-size: 11px; color: var(--muted); font-family: var(--font); margin-top: 2px; }
+
+.mini:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.mini .label {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: var(--font);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.mini .name {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.mini .sub {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--font);
+  margin-top: 2px;
+  overflow-wrap: anywhere;
+}
+
+/* =========================
+   AGENT
+========================= */
 
 .agent {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-  padding: 12px 14px; margin-bottom: 18px; font-family: var(--font); font-size: 12px;
-  position: relative; overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  font-family: var(--font);
+  font-size: 12px;
+  position: relative;
+  overflow: hidden;
 }
+
 .scan-line {
-  position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  opacity: 0.55; animation: scan 3.2s linear infinite;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent),
+    transparent
+  );
+  opacity: 0.55;
+  animation: scan 3.2s linear infinite;
 }
+
 @keyframes scan {
-  0% { top: 0; opacity: 0; } 10% { opacity: 0.6; } 90% { opacity: 0.6; } 100% { top: 100%; opacity: 0; }
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.6;
+  }
+
+  90% {
+    opacity: 0.6;
+  }
+
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
 }
-.agent-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
-.agent-status { display: flex; align-items: center; gap: 8px; color: var(--accent); }
-.dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+
+.agent-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.agent-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  flex-shrink: 0;
+}
+
 @keyframes pulse {
-  0%,100% { box-shadow: 0 0 0 0 rgba(34,211,160,0.5); } 50% { box-shadow: 0 0 0 5px transparent; }
+  0%,100% {
+    box-shadow: 0 0 0 0 rgba(34,211,160,0.5);
+  }
+
+  50% {
+    box-shadow: 0 0 0 5px transparent;
+  }
 }
-.agent-log { color: var(--muted); font-size: 11px; max-height: 66px; overflow: hidden; line-height: 1.55; }
+
+.agent-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.last-scan {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.agent-log {
+  color: var(--muted);
+  font-size: 11px;
+  max-height: 66px;
+  overflow: hidden;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
 .rescan {
-  background: transparent; border: 1px solid var(--border); color: var(--muted);
-  font-family: var(--font); font-size: 11px; padding: 4px 11px; border-radius: 5px; cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 11px;
+  padding: 4px 11px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
 }
-.rescan:hover { border-color: var(--accent); color: var(--accent); }
 
-.controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.rescan:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.rescan:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* =========================
+   CONTROLS
+========================= */
+
+.controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
 .search {
-  flex: 1; min-width: 140px; background: var(--bg); border: 1px solid var(--border);
-  border-radius: 8px; padding: 9px 12px; color: var(--text); font-family: var(--font); font-size: 12px; outline: none;
+  flex: 1;
+  min-width: 140px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 12px;
+  outline: none;
+  min-height: 38px;
 }
-.search:focus { border-color: var(--accent); }
-.select {
-  background: var(--card); border: 1px solid var(--border); color: var(--muted);
-  padding: 9px 28px 9px 11px; border-radius: 8px; font-family: var(--font); font-size: 12px;
-  appearance: none; cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 10px center;
-}
-.tabs { display: flex; gap: 6px; margin-bottom: 13px; flex-wrap: wrap; }
-.tab {
-  background: transparent; border: 1px solid transparent; color: var(--muted);
-  font-family: var(--font); font-size: 12px; padding: 5px 11px; border-radius: 6px; cursor: pointer;
-}
-.tab.active { background: rgba(34,211,160,0.1); color: var(--accent); border-color: rgba(34,211,160,0.3); }
 
-.grid { display: flex; flex-direction: column; gap: 10px; }
+.search:focus {
+  border-color: var(--accent);
+}
+
+.search::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.select {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 9px 28px 9px 11px;
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: 12px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  min-height: 38px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 13px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 12px;
+  padding: 5px 11px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tab.active {
+  background: rgba(34,211,160,0.1);
+  color: var(--accent);
+  border-color: rgba(34,211,160,0.3);
+}
+
+/* =========================
+   NODE CARDS
+========================= */
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-  padding: 14px; transition: 0.25s;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  transition: 0.25s;
+  min-width: 0;
+  overflow: visible;
 }
-.card:hover { border-color: rgba(34,211,160,0.4); transform: translateY(-2px); }
-.card.offline { opacity: 0.72; }
-.card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
-.card-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+
+.card:hover {
+  border-color: rgba(34,211,160,0.4);
+  transform: translateY(-2px);
+}
+
+.card.offline {
+  opacity: 0.72;
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+  min-width: 0;
+}
+
+.card-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
 .avatar {
-  width: 36px; height: 36px; background: var(--card); border: 1px solid var(--border);
-  border-radius: 8px; display: flex; align-items: center; justify-content: center;
-  font-family: var(--font); font-weight: 700; font-size: 13px; color: var(--accent); flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--accent);
+  flex-shrink: 0;
 }
+
 .card-title {
-  font-family: var(--font); font-size: 14px; font-weight: 600; color: var(--text);
-  text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  cursor: pointer;
 }
-.card-title:hover { color: var(--accent); }
-.badges { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+
+.card-title:hover {
+  color: var(--accent);
+}
+
+.badges {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  max-width: 55%;
+  position: relative;
+}
+
 .badge {
-  font-size: 10px; font-family: var(--font); font-weight: 600; padding: 2px 8px;
-  border-radius: 20px; border: 1px solid; position: relative;
+  font-size: 10px;
+  font-family: var(--font);
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid;
+  position: relative;
+  white-space: nowrap;
+  line-height: 1.5;
 }
-.badge.online { background: rgba(34,211,160,0.1); color: var(--accent); border-color: rgba(34,211,160,0.25); }
-.badge.offline { background: rgba(148,163,184,0.1); color: #94a3b8; border-color: rgba(148,163,184,0.25); }
-.badge.verified { 
-  background: rgba(96,165,250,0.12); color: #60a5fa; border-color: rgba(96,165,250,0.3);
+
+.badge.online {
+  background: rgba(34,211,160,0.1);
+  color: var(--accent);
+  border-color: rgba(34,211,160,0.25);
+}
+
+.badge.offline {
+  background: rgba(148,163,184,0.1);
+  color: #94a3b8;
+  border-color: rgba(148,163,184,0.25);
+}
+
+.badge.verified {
+  background: rgba(96,165,250,0.12);
+  color: #60a5fa;
+  border-color: rgba(96,165,250,0.3);
   cursor: help;
+  -webkit-tap-highlight-color: transparent;
 }
+
 .badge.verified::after {
-  content: "Manually reviewed & verified by SRV Hub";
+  content: attr(data-tooltip);
   position: absolute;
   bottom: calc(100% + 8px);
   left: 50%;
@@ -245,77 +761,252 @@ body.light .featured {
   border: 1px solid var(--border);
   color: var(--text);
   font-size: 11px;
+  font-family: var(--font);
+  font-weight: 400;
+  line-height: 1.45;
   padding: 8px 12px;
   border-radius: 8px;
-  white-space: nowrap;
+  white-space: normal;
+  width: max-content;
+  max-width: min(300px, calc(100vw - 40px));
+  text-align: left;
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.2s;
-  z-index: 20;
+  transition:
+    opacity 0.2s,
+    visibility 0.2s;
+  z-index: 100;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
-.badge.verified:hover::after { opacity: 1; }
-.badge.pending { background: rgba(251,191,36,0.12); color: #fbbf24; border-color: rgba(251,191,36,0.3); }
-.badge.cat { background: rgba(192,132,252,0.12); color: #c084fc; border-color: rgba(192,132,252,0.3); }
-.info { font-size: 12px; color: var(--muted); font-family: var(--font); margin-bottom: 10px; }
-.actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.badge.verified:hover::after,
+.badge.verified.tooltip-open::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.badge.pending {
+  background: rgba(251,191,36,0.12);
+  color: #fbbf24;
+  border-color: rgba(251,191,36,0.3);
+}
+
+.badge.cat {
+  background: rgba(192,132,252,0.12);
+  color: #c084fc;
+  border-color: rgba(192,132,252,0.3);
+}
+
+.info {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--font);
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  min-width: 0;
+}
 
 .btn {
-  background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 6px;
-  padding: 6px 12px; font-family: var(--font); font-size: 11px; text-decoration: none;
-  cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-family: var(--font);
+  font-size: 11px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 31px;
 }
-.btn svg { width: 13px; height: 13px; flex-shrink: 0; }
-.btn:hover { border-color: var(--accent); color: var(--accent); }
-.btn.primary:hover { background: var(--accent); color: #0b0d10; border-color: var(--accent); }
-.btn.primary:hover svg { stroke: #0b0d10; }
-.btn.discord:hover { background: #5865f2; border-color: #5865f2; color: #fff; }
-.btn.discord:hover svg { fill: #fff; }
-.btn.disabled { opacity: 0.4; pointer-events: none; }
-.btn-report {
-  background: none; border: none; color: var(--muted); font-family: var(--font);
-  font-size: 11px; cursor: pointer; margin-left: auto; padding: 5px 6px;
-}
-.btn-report:hover { color: var(--danger); }
 
-/* DETAIL */
-.detail-view { display: none; }
-.detail-view.active { display: block; }
+.btn svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn.primary:hover {
+  background: var(--accent);
+  color: #0b0d10;
+  border-color: var(--accent);
+}
+
+.btn.primary:hover svg {
+  stroke: #0b0d10;
+}
+
+.btn.discord:hover {
+  background: #5865f2;
+  border-color: #5865f2;
+  color: #fff;
+}
+
+.btn.discord:hover svg {
+  fill: #fff;
+}
+
+.btn.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.btn-report {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 11px;
+  cursor: pointer;
+  margin-left: auto;
+  padding: 5px 6px;
+}
+
+.btn-report:hover {
+  color: var(--danger);
+}
+
+/* =========================
+   DETAIL
+========================= */
+
+.detail-view {
+  display: none;
+}
+
+.detail-view.active {
+  display: block;
+}
+
 .detail-header {
-  display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  min-width: 0;
 }
+
 .detail-back {
-  background: var(--card); border: 1px solid var(--border); color: var(--muted);
-  font-family: var(--font); font-size: 12px; padding: 7px 14px; border-radius: 6px; cursor: pointer;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 12px;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
 }
-.detail-back:hover { border-color: var(--accent); color: var(--accent); }
+
+.detail-back:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .detail-title {
-  font-family: var(--font); font-size: 22px; font-weight: 700; min-height: 32px;
+  font-family: var(--font);
+  font-size: 22px;
+  font-weight: 700;
+  min-height: 32px;
+  overflow-wrap: anywhere;
 }
-.detail-title span { color: var(--accent); }
+
+.detail-title span {
+  color: var(--accent);
+}
+
 .detail-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-  padding: 20px; margin-bottom: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  min-width: 0;
+  overflow: visible;
 }
+
+.detail-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+  min-width: 0;
+}
+
+.detail-top-info {
+  min-width: 0;
+}
+
+.detail-name {
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.detail-category {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--font);
+}
+
 .detail-card h3 {
-  font-family: var(--font); font-size: 13px; color: var(--accent); margin-bottom: 10px;
-  text-transform: uppercase; letter-spacing: 0.5px;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--accent);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
+
 .detail-meta {
-  display: flex; flex-wrap: wrap; gap: 16px; margin: 14px 0;
-  font-family: var(--font); font-size: 13px; color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 14px 0;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--muted);
 }
-.detail-meta strong { color: var(--accent); }
+
+.detail-meta strong {
+  color: var(--accent);
+}
+
 .verified-terminal {
-  display: inline-flex; align-items: center; gap: 5px;
-  color: #60a5fa; font-family: var(--font); cursor: help; position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #60a5fa;
+  font-family: var(--font);
+  cursor: help;
+  position: relative;
 }
+
 .verified-terminal::before {
   content: "[✓]";
   font-weight: 700;
 }
+
 .verified-terminal::after {
-  content: "Manually reviewed & verified by SRV Hub";
+  content: attr(data-tooltip);
   position: absolute;
   bottom: calc(100% + 8px);
   left: 0;
@@ -323,36 +1014,102 @@ body.light .featured {
   border: 1px solid var(--border);
   color: var(--text);
   font-size: 11px;
+  font-family: var(--font);
+  font-weight: 400;
+  line-height: 1.45;
   padding: 8px 12px;
   border-radius: 8px;
-  white-space: nowrap;
+  white-space: normal;
+  width: max-content;
+  max-width: min(300px, calc(100vw - 40px));
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.2s;
-  z-index: 20;
+  transition:
+    opacity 0.2s,
+    visibility 0.2s;
+  z-index: 100;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
-.verified-terminal:hover::after { opacity: 1; }
-.detail-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
 
-/* FOOTER */
+.verified-terminal:hover::after,
+.verified-terminal.tooltip-open::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
 footer {
-  margin-top: 48px; border-top: 1px solid var(--border); padding-top: 28px;
-  text-align: center; font-family: var(--font);
+  margin-top: 48px;
+  border-top: 1px solid var(--border);
+  padding-top: 28px;
+  text-align: center;
+  font-family: var(--font);
 }
+
 .footer-links {
-  display: flex; justify-content: center; gap: 18px; margin-bottom: 18px; flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
 }
+
 .footer-links a {
-  color: var(--muted); text-decoration: none; font-size: 13px;
-  display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: 0.2s;
 }
-.footer-links a:hover { color: var(--accent); }
-.footer-links svg { width: 15px; height: 15px; }
-.deploy-plus { color: var(--accent); font-weight: 700; margin-right: 2px; }
-.quote { font-style: italic; color: var(--text); margin-bottom: 4px; opacity: 0.9; font-size: 13px; }
-.author { font-size: 10px; color: var(--accent); margin-bottom: 12px; }
-.copyright { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
+
+.footer-links a:hover {
+  color: var(--accent);
+}
+
+.footer-links svg {
+  width: 15px;
+  height: 15px;
+}
+
+.deploy-plus {
+  color: var(--accent);
+  font-weight: 700;
+  margin-right: 2px;
+}
+
+.quote {
+  font-style: italic;
+  color: var(--text);
+  margin-bottom: 4px;
+  opacity: 0.9;
+  font-size: 13px;
+  padding: 0 10px;
+}
+
+.author {
+  font-size: 10px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.copyright {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
 
 .footer-controls {
   display: flex;
@@ -361,402 +1118,2662 @@ footer {
   gap: 10px;
   margin-top: 8px;
 }
+
 .theme-btn-footer {
   background: var(--card);
   border: 1px solid var(--border);
   color: var(--muted);
-  width: 36px; height: 36px;
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
 }
-.theme-btn-footer:hover { border-color: var(--accent); color: var(--accent); }
-.theme-btn-footer svg { width: 16px; height: 16px; }
+
+.theme-btn-footer:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.theme-btn-footer svg {
+  width: 16px;
+  height: 16px;
+}
 
 .lang-selector {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: var(--card); border: 1px solid var(--border); border-radius: 6px;
-  padding: 6px 12px; font-size: 12px; color: var(--muted); cursor: pointer;
-  position: relative; user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+  min-height: 36px;
 }
-.lang-selector:hover { border-color: var(--accent); color: var(--text); }
-.lang-selector svg { width: 14px; height: 14px; }
+
+.lang-selector:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.lang-selector svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
 .lang-dropdown {
-  position: absolute; bottom: calc(100% + 6px); right: 0;
-  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-  min-width: 180px; padding: 6px 0; display: none;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3); z-index: 50;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-width: 180px;
+  padding: 6px 0;
+  display: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  z-index: 50;
 }
-.lang-selector.open .lang-dropdown { display: block; }
+
+.lang-selector.open .lang-dropdown {
+  display: block;
+}
+
 .lang-dropdown div {
-  padding: 8px 14px; font-size: 13px; color: var(--text); cursor: pointer; text-align: left;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
 }
-.lang-dropdown div:hover { background: rgba(34,211,160,0.08); color: var(--accent); }
-.lang-dropdown div.active { color: var(--accent); }
+
+.lang-dropdown div:hover {
+  background: rgba(34,211,160,0.08);
+  color: var(--accent);
+}
+
+.lang-dropdown div.active {
+  color: var(--accent);
+}
+
+/* =========================
+   TOAST
+========================= */
 
 .toast-wrap {
-  position: fixed; bottom: 20px; right: 20px; z-index: 3000;
-  display: flex; flex-direction: column; gap: 8px;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  left: auto;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: min(360px, calc(100vw - 32px));
 }
+
 .toast {
-  background: var(--card); border: 1px solid var(--border); color: var(--text);
-  font-family: var(--font); font-size: 12px; padding: 12px 16px; border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25); opacity: 0; transform: translateY(10px); transition: 0.3s;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: 0.3s;
+  overflow-wrap: anywhere;
 }
-.toast.show { opacity: 1; transform: translateY(0); }
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =========================
+   MODAL
+========================= */
 
 .overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(5px);
-  display: none; align-items: center; justify-content: center; z-index: 2000; padding: 16px;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
 }
-.overlay.active { display: flex; }
+
+.overlay.active {
+  display: flex;
+}
+
 .modal {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-  width: 100%; max-width: 430px; padding: 22px; font-family: var(--font); max-height: 90vh; overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 430px;
+  padding: 22px;
+  font-family: var(--font);
+  max-height: min(90vh, 720px);
+  overflow-y: auto;
 }
-.modal h3 { color: var(--accent); font-size: 15px; margin-bottom: 6px; }
-.modal .note { font-size: 11px; color: var(--muted); margin-bottom: 14px; }
-.modal label { display: block; font-size: 11px; color: var(--muted); margin: 12px 0 4px; }
-.modal input, .modal select {
-  width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
-  padding: 9px 11px; color: var(--text); font-family: var(--font); font-size: 12px; outline: none;
+
+.modal h3 {
+  color: var(--accent);
+  font-size: 15px;
+  margin-bottom: 6px;
 }
-.modal input:focus, .modal select:focus { border-color: var(--accent); }
-.check { display: flex; gap: 8px; margin-top: 15px; font-size: 12px; color: var(--muted); align-items: flex-start; }
-.check input { width: auto; margin-top: 3px; accent-color: var(--accent); }
-.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+.modal .note {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+.modal label {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin: 12px 0 4px;
+}
+
+.modal input,
+.modal select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 11px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 12px;
+  outline: none;
+  min-height: 38px;
+}
+
+.modal input:focus,
+.modal select:focus {
+  border-color: var(--accent);
+}
+
+.check {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
+  font-size: 12px;
+  color: var(--muted);
+  align-items: flex-start;
+}
+
+.check input {
+  width: auto;
+  min-height: auto;
+  margin-top: 3px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.check label {
+  margin: 0;
+  cursor: pointer;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
 .modal-btn {
-  flex: 1; padding: 10px; border-radius: 6px; font-family: var(--font); font-size: 12px;
-  cursor: pointer; border: 1px solid var(--border);
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  font-family: var(--font);
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid var(--border);
 }
-.modal-btn.cancel { background: transparent; color: var(--muted); }
-.modal-btn.submit { background: var(--accent); color: #0b0d10; border-color: var(--accent); font-weight: 600; }
+
+.modal-btn.cancel {
+  background: transparent;
+  color: var(--muted);
+}
+
+.modal-btn.submit {
+  background: var(--accent);
+  color: #0b0d10;
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+/* =========================
+   MOBILE
+========================= */
 
 @media (max-width: 680px) {
-  .discover { grid-template-columns: 1fr; }
-  .menu-toggle { display: block; }
-  .nav-links {
-    display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%;
-    background: rgba(10,12,15,0.97); border-bottom: 1px solid var(--border);
-    padding: 14px 18px; gap: 4px; transform: translateY(-10px); opacity: 0; pointer-events: none;
-    transition: all 0.25s;
+
+  body {
+    padding-bottom: 30px;
   }
-  body.light .nav-links { background: rgba(255,255,255,0.97); }
-  .nav-links.active { transform: translateY(0); opacity: 1; pointer-events: auto; }
-  .nav-links li { width: 100%; text-align: center; padding: 8px 0; border-bottom: 1px solid rgba(42,48,60,0.4); }
-  .nav-links li:last-child { border-bottom: none; }
-  .controls { flex-direction: column; }
-  .search { min-width: 100%; }
+
+  nav {
+    padding: 10px 14px;
+  }
+
+  .brand {
+    font-size: 13px;
+  }
+
+  .logo {
+    width: 34px;
+    height: 34px;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: rgba(10,12,15,0.97);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 18px 14px;
+    gap: 0;
+    transform: translateY(-10px);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform 0.25s,
+      opacity 0.25s;
+  }
+
+  body.light .nav-links {
+    background: rgba(255,255,255,0.97);
+  }
+
+  .nav-links.active {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .nav-links li {
+    width: 100%;
+    text-align: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(42,48,60,0.4);
+  }
+
+  .nav-links li:last-child {
+    border-bottom: none;
+  }
+
+  .nav-links a {
+    display: block;
+    width: 100%;
+    padding: 4px 0;
+  }
+
+  .container {
+    padding: 12px;
+  }
+
+  .hero {
+    padding: 28px 13px 20px;
+  }
+
+  .hero h1 {
+    font-size: 19px;
+    word-break: break-word;
+  }
+
+  .hero p {
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  .stats {
+    gap: 12px;
+    font-size: 11px;
+  }
+
+  .discover {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .featured {
+    padding: 14px;
+  }
+
+  .featured h3 {
+    font-size: 16px;
+    padding-right: 70px;
+  }
+
+  .side {
+    gap: 8px;
+  }
+
+  .agent {
+    padding: 12px;
+  }
+
+  .agent-header {
+    align-items: flex-start;
+  }
+
+  .agent-tools {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .last-scan {
+    flex: 1;
+  }
+
+  .controls {
+    flex-direction: column;
+  }
+
+  .search,
+  .select {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .tabs {
+    gap: 5px;
+  }
+
+  .tab {
+    flex: 1;
+    min-width: 70px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .card-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .card-left {
+    width: 100%;
+  }
+
+  .badges {
+    max-width: 100%;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  /*
+    MOBILE VERIFIED TOOLTIP
+    Tooltip artık ekranın dışına taşmayacak.
+  */
+  .badge.verified::after {
+    left: auto;
+    right: 0;
+    transform: none;
+    bottom: auto;
+    top: calc(100% + 7px);
+    width: min(280px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
+  }
+
+  .verified-terminal::after {
+    left: 0;
+    right: auto;
+    bottom: auto;
+    top: calc(100% + 8px);
+    width: min(280px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
+  }
+
+  .info {
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .actions .btn {
+    flex: 0 1 auto;
+  }
+
+  .btn-report {
+    margin-left: 0;
+  }
+
+  .detail-header {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .detail-title {
+    font-size: 18px;
+  }
+
+  .detail-card {
+    padding: 15px;
+  }
+
+  .detail-top {
+    align-items: flex-start;
+  }
+
+  .detail-meta {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .detail-actions .btn {
+    width: 100%;
+  }
+
+  footer {
+    margin-top: 32px;
+    padding-top: 22px;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    gap: 11px;
+    align-items: center;
+  }
+
+  .footer-controls {
+    justify-content: center;
+    flex-wrap: wrap;
+    padding-bottom: 8px;
+  }
+
+  .lang-dropdown {
+    right: 50%;
+    transform: translateX(50%);
+  }
+
+  .toast-wrap {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    max-width: none;
+  }
+
+  .toast {
+    width: 100%;
+  }
+
+  .modal {
+    padding: 17px;
+    max-height: calc(100vh - 32px);
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .modal-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 390px) {
+
+  .container {
+    padding: 10px;
+  }
+
+  .hero h1 {
+    font-size: 17px;
+  }
+
+  .stats {
+    gap: 8px;
+  }
+
+  .featured .btns {
+    flex-direction: column;
+  }
+
+  .featured .btn {
+    width: 100%;
+  }
+
+  .card-left {
+    gap: 8px;
+  }
+
+  .avatar {
+    width: 34px;
+    height: 34px;
+  }
+
+  .card-title {
+    font-size: 13px;
+  }
+
+  .badges {
+    gap: 4px;
+  }
+
+  .badge {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+}
+
+/* =========================
+   REDUCED MOTION
+========================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 </style>
 </head>
+
 <body>
 
 <nav>
   <a href="#" class="brand" onclick="showMain(); return false;">
     <div class="logo">
       <svg viewBox="0 0 24 24" fill="none">
-        <path d="M12 2L4 6v4l8 4 8-4V6l-8-4z" fill="currentColor" opacity="0.3"/>
-        <path d="M4 14l8 4 8-4" stroke="currentColor" stroke-width="1.5" fill="none"/>
-        <path d="M4 10l8 4 8-4" stroke="currentColor" stroke-width="1.5" fill="none"/>
-        <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+        <path d="M12 2L4 6v4l8 4 8-4V6l-8-4z"
+              fill="currentColor"
+              opacity="0.3"/>
+        <path d="M4 14l8 4 8-4"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"/>
+        <path d="M4 10l8 4 8-4"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"/>
+        <circle cx="12"
+                cy="12"
+                r="1.5"
+                fill="currentColor"/>
       </svg>
     </div>
     \~/srv-hub
   </a>
+
   <div class="nav-right">
-    <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()">
-      <span></span><span></span><span></span>
+    <button
+      class="menu-toggle"
+      id="menuToggle"
+      onclick="toggleMenu()"
+      aria-label="Menu">
+      <span></span>
+      <span></span>
+      <span></span>
     </button>
   </div>
+
   <ul class="nav-links" id="navLinks">
-    <li><a href="#" class="active" onclick="showMain(); closeMenu(); return false;">./home</a></li>
-    <li><a href="#discover" onclick="showMain(); closeMenu();">./discover</a></li>
-    <li><a href="#nodes" onclick="showMain(); closeMenu();">./servers</a></li>
-    <li><a href="#" onclick="openDeploy(); closeMenu(); return false;">./deploy</a></li>
+    <li>
+      <a
+        href="#"
+        class="active"
+        data-i18n="nav_home"
+        onclick="showMain(); closeMenu(); return false;">
+        ./home
+      </a>
+    </li>
+
+    <li>
+      <a
+        href="#discover"
+        data-i18n="nav_discover"
+        onclick="showMain(); closeMenu();">
+        ./discover
+      </a>
+    </li>
+
+    <li>
+      <a
+        href="#nodes"
+        data-i18n="nav_servers"
+        onclick="showMain(); closeMenu();">
+        ./servers
+      </a>
+    </li>
+
+    <li>
+      <a
+        href="#"
+        data-i18n="nav_deploy"
+        onclick="openDeploy(); closeMenu(); return false;">
+        ./deploy
+      </a>
+    </li>
   </ul>
 </nav>
 
 <div class="container">
 
-  <!-- MAIN VIEW -->
+  <!-- =========================
+       MAIN VIEW
+  ========================== -->
+
   <div id="mainView">
+
     <div class="hero">
+
       <h1 id="heroTitle"></h1>
-      <p data-i18n="hero_desc">zero-latency routing hub & verified multiplayer network cluster</p>
+
+      <p data-i18n="hero_desc">
+        zero-latency routing hub & verified multiplayer network cluster
+      </p>
+
       <div class="stats">
-        <div><strong id="sTotal">0</strong> <span data-i18n="nodes">nodes</span></div>
-        <div><strong id="sOnline">0</strong> <span data-i18n="online">online</span></div>
-        <div><strong id="sVerified">0</strong> <span data-i18n="verified">verified</span></div>
+
+        <div>
+          <strong id="sTotal">0</strong>
+          <span data-i18n="nodes">nodes</span>
+        </div>
+
+        <div>
+          <strong id="sOnline">0</strong>
+          <span data-i18n="online">online</span>
+        </div>
+
+        <div>
+          <strong id="sVerified">0</strong>
+          <span data-i18n="verified">verified</span>
+        </div>
+
       </div>
     </div>
+
+    <!-- DISCOVER -->
 
     <div id="discover">
-      <div class="section-title" data-i18n="discover">discover</div>
+
+      <div
+        class="section-title"
+        data-i18n="discover">
+        discover
+      </div>
+
       <div class="discover">
+
         <div class="featured">
-          <div class="tag">FEATURED</div>
+
+          <div
+            class="tag"
+            data-i18n="featured">
+            FEATURED
+          </div>
+
           <h3 id="fName">—</h3>
-          <div class="meta" id="fMeta">—</div>
+
+          <div
+            class="meta"
+            id="fMeta">
+            —
+          </div>
+
           <div class="btns">
-            <a href="#" class="btn primary" id="fVisit">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
-              ./visit
+
+            <a
+              href="#"
+              class="btn primary"
+              id="fVisit"
+              target="_blank"
+              rel="noopener noreferrer">
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2">
+                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+              </svg>
+
+              <span data-i18n="visit">
+                ./visit
+              </span>
+
             </a>
-            <a href="#" class="btn discord" id="fDiscord">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-              ./discord
+
+            <a
+              href="#"
+              class="btn discord"
+              id="fDiscord"
+              target="_blank"
+              rel="noopener noreferrer">
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor">
+                <path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+              </svg>
+
+              <span data-i18n="discord">
+                ./discord
+              </span>
+
             </a>
+
           </div>
         </div>
+
         <div class="side">
-          <div class="mini" id="lowCard">
-            <div class="label" data-i18n="lowest_ping">Lowest Ping</div>
-            <div class="name" id="lowName">—</div>
-            <div class="sub" id="lowSub">—</div>
+
+          <div
+            class="mini"
+            id="lowCard">
+
+            <div
+              class="label"
+              data-i18n="lowest_ping">
+              Lowest Ping
+            </div>
+
+            <div
+              class="name"
+              id="lowName">
+              —
+            </div>
+
+            <div
+              class="sub"
+              id="lowSub">
+              —
+            </div>
+
           </div>
-          <div class="mini" id="newCard">
-            <div class="label" data-i18n="recently_added">Recently Added</div>
-            <div class="name" id="newName">—</div>
-            <div class="sub" id="newSub">—</div>
+
+          <div
+            class="mini"
+            id="newCard">
+
+            <div
+              class="label"
+              data-i18n="recently_added">
+              Recently Added
+            </div>
+
+            <div
+              class="name"
+              id="newName">
+              —
+            </div>
+
+            <div
+              class="sub"
+              id="newSub">
+              —
+            </div>
+
           </div>
-          <div class="mini" onclick="randomNode()">
-            <div class="label" data-i18n="feeling_lucky">Feeling lucky?</div>
-            <div class="name" data-i18n="random_node">Random Node</div>
-            <div class="sub" data-i18n="tap_discover">Tap to discover</div>
+
+          <div
+            class="mini"
+            onclick="randomNode()">
+
+            <div
+              class="label"
+              data-i18n="feeling_lucky">
+              Feeling lucky?
+            </div>
+
+            <div
+              class="name"
+              data-i18n="random_node">
+              Random Node
+            </div>
+
+            <div
+              class="sub"
+              data-i18n="tap_discover">
+              Tap to discover
+            </div>
+
           </div>
+
         </div>
+
       </div>
     </div>
+
+    <!-- AGENT -->
 
     <div class="agent">
+
       <div class="scan-line"></div>
+
       <div class="agent-header">
-        <div class="agent-status"><div class="dot"></div><span>node_agent · running</span></div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span style="font-size:11px;color:var(--muted)" id="lastScan">last sweep: just now</span>
-          <button class="rescan" id="rescanBtn" onclick="rescan()">./rescan</button>
+
+        <div class="agent-status">
+          <div class="dot"></div>
+          <span data-i18n="agent_running">
+            node_agent · running
+          </span>
         </div>
+
+        <div class="agent-tools">
+
+          <span
+            class="last-scan"
+            id="lastScan">
+            last sweep: just now
+          </span>
+
+          <button
+            class="rescan"
+            id="rescanBtn"
+            onclick="rescan()">
+            ./rescan
+          </button>
+
+        </div>
+
       </div>
-      <div class="agent-log" id="log">[agent] initializing...<br>[agent] protocols active</div>
+
+      <div
+        class="agent-log"
+        id="log">
+        [agent] initializing...
+        <br>
+        [agent] protocols active
+      </div>
+
     </div>
+
+    <!-- NODES -->
 
     <div id="nodes">
-      <div class="section-title">all nodes <span id="count" style="color:var(--muted)"></span></div>
+
+      <div class="section-title">
+        <span data-i18n="all_nodes">all nodes</span>
+        <span
+          id="count"
+          style="color:var(--muted)">
+        </span>
+      </div>
+
       <div class="controls">
-        <input class="search" id="search" placeholder="grep node..." oninput="render()">
-        <select class="select" id="cat" onchange="render()">
-          <option value="all">all categories</option>
-          <option value="Minecraft">Minecraft</option>
-          <option value="Rust">Rust</option>
-          <option value="FiveM">FiveM</option>
-          <option value="CS2">CS2</option>
-          <option value="DarkOrbit">DarkOrbit</option>
-          <option value="other">other</option>
+
+        <input
+          class="search"
+          id="search"
+          data-i18n-placeholder="search_placeholder"
+          placeholder="grep node..."
+          oninput="render()">
+
+        <select
+          class="select"
+          id="cat"
+          onchange="render()">
+
+          <option
+            value="all"
+            data-i18n="all_categories">
+            all categories
+          </option>
+
+          <option value="Minecraft">
+            Minecraft
+          </option>
+
+          <option value="Rust">
+            Rust
+          </option>
+
+          <option value="FiveM">
+            FiveM
+          </option>
+
+          <option value="CS2">
+            CS2
+          </option>
+
+          <option value="DarkOrbit">
+            DarkOrbit
+          </option>
+
+          <option
+            value="other"
+            data-i18n="other">
+            other
+          </option>
+
         </select>
-        <select class="select" id="sort" onchange="render()">
-          <option value="default">sort: default</option>
-          <option value="ping">sort: ping</option>
-          <option value="uptime">sort: uptime</option>
-          <option value="name">sort: name</option>
+
+        <select
+          class="select"
+          id="sort"
+          onchange="render()">
+
+          <option
+            value="default"
+            data-i18n="sort_default">
+            sort: default
+          </option>
+
+          <option
+            value="ping"
+            data-i18n="sort_ping">
+            sort: ping
+          </option>
+
+          <option
+            value="uptime"
+            data-i18n="sort_uptime">
+            sort: uptime
+          </option>
+
+          <option
+            value="name"
+            data-i18n="sort_name">
+            sort: name
+          </option>
+
         </select>
+
       </div>
+
       <div class="tabs">
-        <button class="tab active" onclick="setFilter('all',this)">[all]</button>
-        <button class="tab" onclick="setFilter('online',this)">[live]</button>
-        <button class="tab" onclick="setFilter('verified',this)">[verified]</button>
-        <button class="tab" onclick="setFilter('pending',this)">[pending]</button>
+
+        <button
+          class="tab active"
+          onclick="setFilter('all',this)"
+          data-i18n="filter_all">
+          [all]
+        </button>
+
+        <button
+          class="tab"
+          onclick="setFilter('online',this)"
+          data-i18n="filter_live">
+          [live]
+        </button>
+
+        <button
+          class="tab"
+          onclick="setFilter('verified',this)"
+          data-i18n="filter_verified">
+          [verified]
+        </button>
+
+        <button
+          class="tab"
+          onclick="setFilter('pending',this)"
+          data-i18n="filter_pending">
+          [pending]
+        </button>
+
       </div>
-      <div class="grid" id="grid"></div>
+
+      <div
+        class="grid"
+        id="grid">
+      </div>
+
     </div>
+
   </div>
 
-  <!-- DETAIL VIEW -->
-  <div id="detailView" class="detail-view">
+  <!-- =========================
+       DETAIL VIEW
+  ========================== -->
+
+  <div
+    id="detailView"
+    class="detail-view">
+
     <div class="detail-header">
-      <button class="detail-back" onclick="showMain()">← back</button>
-      <div class="detail-title" id="detailTitle"></div>
-    </div>
 
-    <div class="detail-card">
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:8px;">
-        <div class="avatar" id="detailAvatar" style="width:48px;height:48px;font-size:16px;"></div>
-        <div>
-          <div style="font-family:var(--font);font-size:18px;font-weight:700;" id="detailName"></div>
-          <div style="font-size:12px;color:var(--muted);font-family:var(--font);" id="detailCat"></div>
-        </div>
-      </div>
-      <div class="detail-meta" id="detailMeta"></div>
-      <h3 data-i18n="about">ABOUT</h3>
-      <div id="detailAbout" style="font-size:14px;line-height:1.6;"></div>
-      <div class="detail-actions" id="detailActions"></div>
-    </div>
-
-    <div class="detail-card">
-      <h3 data-i18n="legal">LEGAL / COPYRIGHT</h3>
-      <div id="detailLegal" style="font-size:13px;color:var(--muted);line-height:1.6;"></div>
-    </div>
-
-    <!-- Keşfet section on detail page -->
-    <div class="section-title" style="margin-top:24px;" data-i18n="discover">discover</div>
-    <div class="discover" id="detailDiscover"></div>
-  </div>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-links">
-      <a href="https://github.com" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.207 11.387.6.113.793-.26.793-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.386-1.332-1.755-1.332-1.755-1.09-.745.083-.73.083-.73 1.205.085 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg>
-        GitHub
-      </a>
-      <a href="#" onclick="toast('Discord coming soon'); return false;">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-        Discord
-      </a>
-      <a href="#" onclick="openDeploy(); return false;">
-        <span class="deploy-plus">+</span> Deploy
-      </a>
-    </div>
-    <div class="quote">"Code is like humor. When you have to explain it, it's bad."</div>
-    <div class="author">— Anonim</div>
-    <div class="copyright">© 2026 SRV Hub · v3.3.2</div>
-
-    <div class="footer-controls">
-      <button class="theme-btn-footer" onclick="toggleTheme()" title="Toggle theme">
-        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="5"/>
-          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-        </svg>
+      <button
+        class="detail-back"
+        onclick="showMain()"
+        data-i18n="back">
+        ← back
       </button>
 
-      <div class="lang-selector" id="langSelector" onclick="toggleLang()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
-        </svg>
-        <span id="currentLang">English</span>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        <div class="lang-dropdown">
-          <div class="active" data-lang="en" onclick="setLang('en','English',event)">English</div>
-          <div data-lang="tr" onclick="setLang('tr','Türkçe',event)">Türkçe</div>
-          <div data-lang="pt" onclick="setLang('pt','Português',event)">Português</div>
-          <div data-lang="es" onclick="setLang('es','Español',event)">Español</div>
-          <div data-lang="ja" onclick="setLang('ja','日本語',event)">日本語</div>
-          <div data-lang="ko" onclick="setLang('ko','한국어',event)">한국어</div>
-          <div data-lang="fr" onclick="setLang('fr','Français',event)">Français</div>
-          <div data-lang="de" onclick="setLang('de','Deutsch',event)">Deutsch</div>
-        </div>
+      <div
+        class="detail-title"
+        id="detailTitle">
       </div>
+
     </div>
+
+    <div class="detail-card">
+
+      <div class="detail-top">
+
+        <div
+          class="avatar"
+          id="detailAvatar"
+          style="width:48px;height:48px;font-size:16px;">
+        </div>
+
+        <div class="detail-top-info">
+
+          <div
+            class="detail-name"
+            id="detailName">
+          </div>
+
+          <div
+            class="detail-category"
+            id="detailCat">
+          </div>
+
+        </div>
+
+      </div>
+
+      <div
+        class="detail-meta"
+        id="detailMeta">
+      </div>
+
+      <h3 data-i18n="about">
+        ABOUT
+      </h3>
+
+      <div
+        id="detailAbout"
+        style="font-size:14px;line-height:1.6;">
+      </div>
+
+      <div
+        class="detail-actions"
+        id="detailActions">
+      </div>
+
+    </div>
+
+    <div class="detail-card">
+
+      <h3 data-i18n="legal">
+        LEGAL / COPYRIGHT
+      </h3>
+
+      <div
+        id="detailLegal"
+        style="font-size:13px;color:var(--muted);line-height:1.6;">
+      </div>
+
+    </div>
+
+    <div
+      class="section-title"
+      style="margin-top:24px;"
+      data-i18n="discover">
+      discover
+    </div>
+
+    <div
+      class="discover"
+      id="detailDiscover">
+    </div>
+
+  </div>
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+
+  <footer>
+
+    <div class="footer-links">
+
+      <a
+        href="https://github.com"
+        target="_blank"
+        rel="noopener noreferrer">
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="currentColor">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.207 11.387.6.113.793-.26.793-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.386-1.332-1.755-1.332-1.755-1.09-.745.083-.73.083-.73 1.205.085 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+
+        <span data-i18n="github">
+          GitHub
+        </span>
+
+      </a>
+
+      <a
+        href="#"
+        onclick="toast(t('discord_coming')); return false;">
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="currentColor">
+          <path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+        </svg>
+
+        <span data-i18n="discord_link">
+          Discord
+        </span>
+
+      </a>
+
+      <a
+        href="#"
+        onclick="openDeploy(); return false;">
+
+        <span class="deploy-plus">+</span>
+        <span data-i18n="deploy">
+          Deploy
+        </span>
+
+      </a>
+
+    </div>
+
+    <div
+      class="quote"
+      data-i18n="quote">
+      "Code is like humor. When you have to explain it, it's bad."
+    </div>
+
+    <div
+      class="author"
+      data-i18n="author_anonymous">
+      — Anonymous
+    </div>
+
+    <div
+      class="copyright">
+      © 2026 SRV Hub · v3.3.2
+    </div>
+
+    <div class="footer-controls">
+
+      <button
+        class="theme-btn-footer"
+        onclick="toggleTheme()"
+        title="Toggle theme"
+        data-i18n-title="toggle_theme">
+
+        <svg
+          id="themeIcon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2">
+
+          <circle
+            cx="12"
+            cy="12"
+            r="5"/>
+
+          <path
+            d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+
+        </svg>
+
+      </button>
+
+      <div
+        class="lang-selector"
+        id="langSelector"
+        onclick="toggleLang()">
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8">
+
+          <circle
+            cx="12"
+            cy="12"
+            r="10"/>
+
+          <path
+            d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+
+        </svg>
+
+        <span id="currentLang">
+          English
+        </span>
+
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2">
+
+          <path d="M6 9l6 6 6-6"/>
+
+        </svg>
+
+        <div class="lang-dropdown">
+
+          <div
+            class="active"
+            data-lang="en"
+            onclick="setLang('en','English',event)">
+            English
+          </div>
+
+          <div
+            data-lang="tr"
+            onclick="setLang('tr','Türkçe',event)">
+            Türkçe
+          </div>
+
+          <div
+            data-lang="pt"
+            onclick="setLang('pt','Português',event)">
+            Português
+          </div>
+
+          <div
+            data-lang="es"
+            onclick="setLang('es','Español',event)">
+            Español
+          </div>
+
+          <div
+            data-lang="ja"
+            onclick="setLang('ja','日本語',event)">
+            日本語
+          </div>
+
+          <div
+            data-lang="ko"
+            onclick="setLang('ko','한국어',event)">
+            한국어
+          </div>
+
+          <div
+            data-lang="fr"
+            onclick="setLang('fr','Français',event)">
+            Français
+          </div>
+
+          <div
+            data-lang="de"
+            onclick="setLang('de','Deutsch',event)">
+            Deutsch
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
   </footer>
+
 </div>
 
-<!-- Deploy Modal -->
-<div class="overlay" id="deployModal">
+<!-- =========================
+     DEPLOY MODAL
+========================== -->
+
+<div
+  class="overlay"
+  id="deployModal">
+
   <div class="modal">
-    <h3>./deploy — Submit Node</h3>
-    <div class="note">All submissions are manually reviewed.</div>
-    <label>Server Name / Domain *</label>
-    <input id="dName" placeholder="example.gg">
-    <label>Category</label>
+
+    <h3 data-i18n="deploy_title">
+      ./deploy — Submit Node
+    </h3>
+
+    <div
+      class="note"
+      data-i18n="deploy_note">
+      All submissions are manually reviewed.
+    </div>
+
+    <label data-i18n="server_name_label">
+      Server Name / Domain *
+    </label>
+
+    <input
+      id="dName"
+      data-i18n-placeholder="server_name_placeholder"
+      placeholder="example.gg">
+
+    <label data-i18n="category_label">
+      Category
+    </label>
+
     <select id="dCat">
-      <option>Minecraft</option>
-      <option>Rust</option>
-      <option>FiveM</option>
-      <option>CS2</option>
-      <option>DarkOrbit</option>
-      <option>other</option>
+
+      <option value="Minecraft">
+        Minecraft
+      </option>
+
+      <option value="Rust">
+        Rust
+      </option>
+
+      <option value="FiveM">
+        FiveM
+      </option>
+
+      <option value="CS2">
+        CS2
+      </option>
+
+      <option value="DarkOrbit">
+        DarkOrbit
+      </option>
+
+      <option
+        value="other"
+        data-i18n="other">
+        other
+      </option>
+
     </select>
-    <label>Discord Invite (optional)</label>
-    <input id="dDiscord" placeholder="https://discord.gg/...">
-    <label>Contact *</label>
-    <input id="dContact" placeholder="user#0000">
+
+    <label data-i18n="discord_invite_label">
+      Discord Invite (optional)
+    </label>
+
+    <input
+      id="dDiscord"
+      data-i18n-placeholder="discord_placeholder"
+      placeholder="https://discord.gg/...">
+
+    <label data-i18n="contact_label">
+      Contact *
+    </label>
+
+    <input
+      id="dContact"
+      data-i18n-placeholder="contact_placeholder"
+      placeholder="user#0000">
+
     <div class="check">
-      <input type="checkbox" id="dOwner">
-      <label for="dOwner" style="margin:0;cursor:pointer;">I confirm I am the owner or authorized admin.</label>
+
+      <input
+        type="checkbox"
+        id="dOwner">
+
+      <label
+        for="dOwner"
+        data-i18n="owner_confirm">
+        I confirm I am the owner or authorized admin.
+      </label>
+
     </div>
+
     <div class="modal-actions">
-      <button class="modal-btn cancel" onclick="closeDeploy()">cancel</button>
-      <button class="modal-btn submit" onclick="submit()">submit</button>
+
+      <button
+        class="modal-btn cancel"
+        onclick="closeDeploy()"
+        data-i18n="cancel">
+        cancel
+      </button>
+
+      <button
+        class="modal-btn submit"
+        onclick="submit()"
+        data-i18n="submit">
+        submit
+      </button>
+
     </div>
+
   </div>
 </div>
 
-<div class="toast-wrap" id="toasts"></div>
+<div
+  class="toast-wrap"
+  id="toasts">
+</div>
 
 <script>
-// ========== TRANSLATIONS ==========
+
+/* ============================================================
+   TRANSLATIONS
+============================================================ */
+
 const i18n = {
+
   en: {
-    hero_desc: "zero-latency routing hub & verified multiplayer network cluster",
-    nodes: "nodes", online: "online", verified: "verified",
-    discover: "discover", lowest_ping: "Lowest Ping", recently_added: "Recently Added",
-    feeling_lucky: "Feeling lucky?", random_node: "Random Node", tap_discover: "Tap to discover",
-    about: "ABOUT", legal: "LEGAL / COPYRIGHT"
+    nav_home: "./home",
+    nav_discover: "./discover",
+    nav_servers: "./servers",
+    nav_deploy: "./deploy",
+
+    hero_desc:
+      "zero-latency routing hub & verified multiplayer network cluster",
+
+    nodes: "nodes",
+    online: "online",
+    verified: "verified",
+
+    discover: "discover",
+    featured: "FEATURED",
+    lowest_ping: "Lowest Ping",
+    recently_added: "Recently Added",
+    feeling_lucky: "Feeling lucky?",
+    random_node: "Random Node",
+    tap_discover: "Tap to discover",
+
+    about: "ABOUT",
+    legal: "LEGAL / COPYRIGHT",
+
+    visit: "./visit",
+    discord: "./discord",
+
+    agent_running: "node_agent · running",
+    rescan: "./rescan",
+    all_nodes: "all nodes",
+
+    search_placeholder: "grep node...",
+    all_categories: "all categories",
+    other: "other",
+
+    sort_default: "sort: default",
+    sort_ping: "sort: ping",
+    sort_uptime: "sort: uptime",
+    sort_name: "sort: name",
+
+    filter_all: "[all]",
+    filter_live: "[live]",
+    filter_verified: "[verified]",
+    filter_pending: "[pending]",
+
+    back: "← back",
+
+    github: "GitHub",
+    discord_link: "Discord",
+    deploy: "Deploy",
+
+    quote:
+      "\"Code is like humor. When you have to explain it, it's bad.\"",
+
+    author_anonymous: "— Anonymous",
+
+    toggle_theme: "Toggle theme",
+
+    deploy_title: "./deploy — Submit Node",
+    deploy_note: "All submissions are manually reviewed.",
+    server_name_label: "Server Name / Domain *",
+    server_name_placeholder: "example.gg",
+    category_label: "Category",
+    discord_invite_label: "Discord Invite (optional)",
+    discord_placeholder: "https://discord.gg/...",
+    contact_label: "Contact *",
+    contact_placeholder: "user#0000",
+    owner_confirm:
+      "I confirm I am the owner or authorized admin.",
+
+    cancel: "cancel",
+    submit: "submit",
+
+    no_nodes: "no nodes found",
+    status_online: "online",
+    status_offline: "offline",
+    pending: "pending",
+    secure: "secure",
+
+    verify_tooltip:
+      "Manually reviewed & verified by SRV Hub",
+
+    last_sweep_just_now: "last sweep: just now",
+
+    name_contact_required:
+      "Name and contact required",
+
+    confirm_ownership:
+      "Confirm ownership",
+
+    already_exists:
+      "Already exists",
+
+    submitted:
+      "Submitted — pending review",
+
+    report_confirm:
+      "Report \"{name}\"?",
+
+    report_submitted:
+      "Report submitted",
+
+    discovered:
+      "Discovered: {name}",
+
+    rescan_triggered:
+      "[agent] manual rescan triggered...",
+
+    verification_completed:
+      "[agent] full verification completed",
+
+    rescan_completed:
+      "Rescan completed",
+
+    discord_coming:
+      "Discord coming soon",
+
+    scanning:
+      "scanning..."
   },
+
   tr: {
-    hero_desc: "sıfır gecikmeli yönlendirme merkezi & doğrulanmış çok oyunculu ağ kümesi",
-    nodes: "sunucu", online: "çevrimiçi", verified: "doğrulanmış",
-    discover: "keşfet", lowest_ping: "En Düşük Ping", recently_added: "Yeni Eklenen",
-    feeling_lucky: "Şanslı mısın?", random_node: "Rastgele Sunucu", tap_discover: "Keşfetmek için dokun",
-    about: "HAKKINDA", legal: "YASAL / TELİF HAKKI"
+    nav_home: "./anasayfa",
+    nav_discover: "./kesfet",
+    nav_servers: "./sunucular",
+    nav_deploy: "./ekle",
+
+    hero_desc:
+      "sıfır gecikmeli yönlendirme merkezi & doğrulanmış çok oyunculu ağ kümesi",
+
+    nodes: "sunucu",
+    online: "çevrimiçi",
+    verified: "doğrulanmış",
+
+    discover: "keşfet",
+    featured: "ÖNE ÇIKAN",
+    lowest_ping: "En Düşük Ping",
+    recently_added: "Yeni Eklenen",
+    feeling_lucky: "Şanslı mısın?",
+    random_node: "Rastgele Sunucu",
+    tap_discover: "Keşfetmek için dokun",
+
+    about: "HAKKINDA",
+    legal: "YASAL / TELİF HAKKI",
+
+    visit: "./ziyaret",
+    discord: "./discord",
+
+    agent_running: "node_agent · çalışıyor",
+    rescan: "./yeniden tara",
+    all_nodes: "tüm sunucular",
+
+    search_placeholder: "sunucu ara...",
+    all_categories: "tüm kategoriler",
+    other: "diğer",
+
+    sort_default: "sırala: varsayılan",
+    sort_ping: "sırala: ping",
+    sort_uptime: "sırala: uptime",
+    sort_name: "sırala: isim",
+
+    filter_all: "[tümü]",
+    filter_live: "[canlı]",
+    filter_verified: "[doğrulanmış]",
+    filter_pending: "[bekleyen]",
+
+    back: "← geri",
+
+    github: "GitHub",
+    discord_link: "Discord",
+    deploy: "Ekle",
+
+    quote:
+      "\"Kod mizah gibidir. Açıklamak zorundaysan kötüdür.\"",
+
+    author_anonymous: "— Anonim",
+
+    toggle_theme: "Temayı değiştir",
+
+    deploy_title: "./ekle — Sunucu Gönder",
+    deploy_note:
+      "Tüm gönderimler manuel olarak incelenir.",
+    server_name_label:
+      "Sunucu Adı / Alan Adı *",
+    server_name_placeholder:
+      "ornek.gg",
+    category_label:
+      "Kategori",
+    discord_invite_label:
+      "Discord Daveti (isteğe bağlı)",
+    discord_placeholder:
+      "https://discord.gg/...",
+    contact_label:
+      "İletişim *",
+    contact_placeholder:
+      "kullanici#0000",
+    owner_confirm:
+      "Sunucunun sahibi veya yetkili yöneticisi olduğumu onaylıyorum.",
+
+    cancel: "iptal",
+    submit: "gönder",
+
+    no_nodes:
+      "sunucu bulunamadı",
+
+    status_online: "çevrimiçi",
+    status_offline: "çevrimdışı",
+    pending: "bekliyor",
+    secure: "güvenli",
+
+    verify_tooltip:
+      "SRV Hub tarafından manuel olarak incelendi ve doğrulandı",
+
+    last_sweep_just_now:
+      "son tarama: şimdi",
+
+    name_contact_required:
+      "İsim ve iletişim bilgisi gerekli",
+
+    confirm_ownership:
+      "Sahipliği onayla",
+
+    already_exists:
+      "Zaten mevcut",
+
+    submitted:
+      "Gönderildi — inceleme bekliyor",
+
+    report_confirm:
+      "\"{name}\" bildirilsin mi?",
+
+    report_submitted:
+      "Bildirim gönderildi",
+
+    discovered:
+      "Keşfedildi: {name}",
+
+    rescan_triggered:
+      "[agent] manuel yeniden tarama başlatıldı...",
+
+    verification_completed:
+      "[agent] tam doğrulama tamamlandı",
+
+    rescan_completed:
+      "Yeniden tarama tamamlandı",
+
+    discord_coming:
+      "Discord yakında",
+
+    scanning:
+      "taranıyor..."
   },
+
   pt: {
-    hero_desc: "hub de roteamento de latência zero & cluster multiplayer verificado",
-    nodes: "nodes", online: "online", verified: "verificado",
-    discover: "descobrir", lowest_ping: "Menor Ping", recently_added: "Adicionado Recentemente",
-    feeling_lucky: "Sentindo-se sortudo?", random_node: "Node Aleatório", tap_discover: "Toque para descobrir",
-    about: "SOBRE", legal: "LEGAL / DIREITOS AUTORAIS"
+    nav_home: "./inicio",
+    nav_discover: "./descobrir",
+    nav_servers: "./servidores",
+    nav_deploy: "./publicar",
+
+    hero_desc:
+      "hub de roteamento de latência zero & cluster multiplayer verificado",
+
+    nodes: "nodes",
+    online: "online",
+    verified: "verificado",
+
+    discover: "descobrir",
+    featured: "DESTAQUE",
+    lowest_ping: "Menor Ping",
+    recently_added: "Adicionado Recentemente",
+    feeling_lucky: "Sentindo-se sortudo?",
+    random_node: "Node Aleatório",
+    tap_discover: "Toque para descobrir",
+
+    about: "SOBRE",
+    legal: "LEGAL / DIREITOS AUTORAIS",
+
+    visit: "./visitar",
+    discord: "./discord",
+
+    agent_running: "node_agent · executando",
+    rescan: "./verificar",
+    all_nodes: "todos os nodes",
+
+    search_placeholder: "buscar node...",
+    all_categories: "todas as categorias",
+    other: "outro",
+
+    sort_default: "ordenar: padrão",
+    sort_ping: "ordenar: ping",
+    sort_uptime: "ordenar: uptime",
+    sort_name: "ordenar: nome",
+
+    filter_all: "[todos]",
+    filter_live: "[online]",
+    filter_verified: "[verificados]",
+    filter_pending: "[pendentes]",
+
+    back: "← voltar",
+
+    github: "GitHub",
+    discord_link: "Discord",
+    deploy: "Publicar",
+
+    quote:
+      "\"Código é como humor. Se você precisa explicar, é ruim.\"",
+
+    author_anonymous: "— Anônimo",
+
+    toggle_theme: "Alternar tema",
+
+    deploy_title: "./publicar — Enviar Node",
+    deploy_note: "Todos os envios são revisados manualmente.",
+    server_name_label: "Nome do servidor / domínio *",
+    server_name_placeholder: "exemplo.gg",
+    category_label: "Categoria",
+    discord_invite_label: "Convite do Discord (opcional)",
+    discord_placeholder: "https://discord.gg/...",
+    contact_label: "Contato *",
+    contact_placeholder: "usuario#0000",
+    owner_confirm:
+      "Confirmo que sou o proprietário ou administrador autorizado.",
+
+    cancel: "cancelar",
+    submit: "enviar",
+
+    no_nodes: "nenhum node encontrado",
+
+    status_online: "online",
+    status_offline: "offline",
+    pending: "pendente",
+    secure: "seguro",
+
+    verify_tooltip:
+      "Revisado e verificado manualmente pelo SRV Hub",
+
+    last_sweep_just_now: "última verificação: agora",
+
+    name_contact_required:
+      "Nome e contato são obrigatórios",
+
+    confirm_ownership:
+      "Confirme a propriedade",
+
+    already_exists:
+      "Já existe",
+
+    submitted:
+      "Enviado — aguardando revisão",
+
+    report_confirm:
+      "Denunciar \"{name}\"?",
+
+    report_submitted:
+      "Denúncia enviada",
+
+    discovered:
+      "Descoberto: {name}",
+
+    rescan_triggered:
+      "[agent] nova verificação manual iniciada...",
+
+    verification_completed:
+      "[agent] verificação completa concluída",
+
+    rescan_completed:
+      "Verificação concluída",
+
+    discord_coming:
+      "Discord em breve",
+
+    scanning:
+      "verificando..."
   },
+
   es: {
-    hero_desc: "centro de enrutamiento de latencia cero y clúster multijugador verificado",
-    nodes: "nodos", online: "en línea", verified: "verificado",
-    discover: "descubrir", lowest_ping: "Ping Más Bajo", recently_added: "Agregado Recientemente",
-    feeling_lucky: "¿Te sientes afortunado?", random_node: "Nodo Aleatorio", tap_discover: "Toca para descubrir",
-    about: "ACERCA DE", legal: "LEGAL / COPYRIGHT"
+    nav_home: "./inicio",
+    nav_discover: "./descubrir",
+    nav_servers: "./servidores",
+    nav_deploy: "./publicar",
+
+    hero_desc:
+      "centro de enrutamiento de latencia cero y clúster multijugador verificado",
+
+    nodes: "nodos",
+    online: "en línea",
+    verified: "verificado",
+
+    discover: "descubrir",
+    featured: "DESTACADO",
+    lowest_ping: "Ping Más Bajo",
+    recently_added: "Agregado Recientemente",
+    feeling_lucky: "¿Te sientes afortunado?",
+    random_node: "Nodo Aleatorio",
+    tap_discover: "Toca para descubrir",
+
+    about: "ACERCA DE",
+    legal: "LEGAL / COPYRIGHT",
+
+    visit: "./visitar",
+    discord: "./discord",
+
+    agent_running: "node_agent · ejecutando",
+    rescan: "./volver a escanear",
+    all_nodes: "todos los nodos",
+
+    search_placeholder: "buscar nodo...",
+    all_categories: "todas las categorías",
+    other: "otro",
+
+    sort_default: "ordenar: predeterminado",
+    sort_ping: "ordenar: ping",
+    sort_uptime: "ordenar: uptime",
+    sort_name: "ordenar: nombre",
+
+    filter_all: "[todos]",
+    filter_live: "[en línea]",
+    filter_verified: "[verificados]",
+    filter_pending: "[pendientes]",
+
+    back: "← volver",
+
+    github: "GitHub",
+    discord_link: "Discord",
+    deploy: "Publicar",
+
+    quote:
+      "\"El código es como el humor. Si tienes que explicarlo, es malo.\"",
+
+    author_anonymous: "— Anónimo",
+
+    toggle_theme: "Cambiar tema",
+
+    deploy_title: "./publicar — Enviar Nodo",
+    deploy_note:
+      "Todos los envíos se revisan manualmente.",
+    server_name_label:
+      "Nombre del servidor / dominio *",
+    server_name_placeholder:
+      "ejemplo.gg",
+    category_label:
+      "Categoría",
+    discord_invite_label:
+      "Invitación de Discord (opcional)",
+    discord_placeholder:
+      "https://discord.gg/...",
+    contact_label:
+      "Contacto *",
+    contact_placeholder:
+      "usuario#0000",
+    owner_confirm:
+      "Confirmo que soy el propietario o administrador autorizado.",
+
+    cancel: "cancelar",
+    submit: "enviar",
+
+    no_nodes:
+      "no se encontraron nodos",
+
+    status_online: "en línea",
+    status_offline: "fuera de línea",
+    pending: "pendiente",
+    secure: "seguro",
+
+    verify_tooltip:
+      "Revisado y verificado manualmente por SRV Hub",
+
+    last_sweep_just_now:
+      "último escaneo: ahora",
+
+    name_contact_required:
+      "El nombre y contacto son obligatorios",
+
+    confirm_ownership:
+      "Confirma la propiedad",
+
+    already_exists:
+      "Ya existe",
+
+    submitted:
+      "Enviado — pendiente de revisión",
+
+    report_confirm:
+      "¿Reportar \"{name}\"?",
+
+    report_submitted:
+      "Reporte enviado",
+
+    discovered:
+      "Descubierto: {name}",
+
+    rescan_triggered:
+      "[agent] nuevo escaneo manual iniciado...",
+
+    verification_completed:
+      "[agent] verificación completa finalizada",
+
+    rescan_completed:
+      "Escaneo completado",
+
+    discord_coming:
+      "Discord próximamente",
+
+    scanning:
+      "escaneando..."
   },
+
   ja: {
-    hero_desc: "ゼロレイテンシー・ルーティングハブ & 認証済みマルチプレイヤーネットワーク",
-    nodes: "ノード", online: "オンライン", verified: "認証済み",
-    discover: "発見", lowest_ping: "最低Ping", recently_added: "最近追加",
-    feeling_lucky: "ラッキー？", random_node: "ランダムノード", tap_discover: "タップして発見",
-    about: "概要", legal: "法的情報"
+    nav_home: "./ホーム",
+    nav_discover: "./探索",
+    nav_servers: "./サーバー",
+    nav_deploy: "./登録",
+
+    hero_desc:
+      "ゼロレイテンシー・ルーティングハブ & 認証済みマルチプレイヤーネットワーク",
+
+    nodes: "ノード",
+    online: "オンライン",
+    verified: "認証済み",
+
+    discover: "発見",
+    featured: "注目",
+    lowest_ping: "最低Ping",
+    recently_added: "最近追加",
+    feeling_lucky: "ラッキー？",
+    random_node: "ランダムノード",
+    tap_discover: "タップして発見",
+
+    about: "概要",
+    legal: "法的情報",
+
+    visit: "./訪問",
+    discord: "./discord",
+
+    agent_running: "node_agent · 実行中",
+    rescan: "./再スキャン",
+    all_nodes: "すべてのノード",
+
+    search_placeholder: "ノードを検索...",
+    all_categories: "すべてのカテゴリ",
+    other: "その他",
+
+    sort_default: "並び替え: デフォルト",
+    sort_ping: "並び替え: Ping",
+    sort_uptime: "並び替え: 稼働率",
+    sort_name: "並び替え: 名前",
+
+    filter_all: "[すべて]",
+    filter_live: "[ライブ]",
+    filter_verified: "[認証済み]",
+    filter_pending: "[保留中]",
+
+    back: "← 戻る",
+
+    github: "GitHub",
+    discord_link: "Discord",
+    deploy: "登録",
+
+    quote:
+      "\"コードはユーモアのようなもの。説明が必要なら悪いコードだ。\"",
+
+    author_anonymous: "— 匿名",
+
+    toggle_theme: "テーマを切り替える",
+
+    deploy_title: "./登録 — ノードを送信",
+    deploy_note: "すべての送信内容は手動で確認されます。",
+    server_name_label: "サーバー名 / ドメイン *",
+    server_name_placeholder: "example.gg",
+    category_label: "カテゴリ",
+    discord_invite_label: "Discord招待（任意）",
+    discord_placeholder: "https://discord.gg/...",
+    contact_label: "連絡先 *",
+    contact_placeholder: "user#0000",
+    owner_confirm:
+      "所有者または認証済み管理者であることを確認します。",
+
+    cancel: "キャンセル",
+    submit: "送信",
+
+    no_nodes: "ノードが見つかりません",
+
+    status_online: "オンライン",
+    status_offline: "オフライン",
+    pending: "保留中",
+    secure: "安全",
+
+    verify_tooltip:
+      "SRV Hubによって手動で確認・認証されています",
+
+    last_sweep_just_now:
+      "最終スキャン: 今",
+
+    name_contact_required:
+      "名前と連絡先が必要です",
+
+    confirm_ownership:
+      "所有権を確認してください",
+
+    already_exists:
+      "すでに存在します",
+
+    submitted:
+      "送信済み — 確認待ち",
+
+    report_confirm:
+      "\"{name}\" を報告しますか？",
+
+    report_submitted:
+      "報告を送信しました",
+
+    discovered:
+      "発見: {name}",
+
+    rescan_triggered:
+      "[agent] 手動再スキャンを開始...",
+
+    verification_completed:
+      "[agent] 完全な認証が完了しました",
+
+    rescan_completed:
+      "再スキャン完了",
+
+    discord_coming:
+      "Discordは近日公開",
+
+    scanning:
+      "スキャン中..."
   },
+
   ko: {
-    hero_desc: "제로 레이턴시 라우팅 허브 & 검증된 멀티플레이어 네트워크 클러스터",
-    nodes: "노드", online: "온라인", verified: "인증됨",
-    discover: "발견", lowest_ping: "최저 핑", recently_added: "최근 추가",
-    feeling_lucky: "행운을 시험해볼까요?", random_node: "랜덤 노드", tap_discover: "탭하여 발견",
-    about: "소개", legal: "법적 고지"
+    nav_home: "./홈",
+    nav_discover: "./탐색",
+    nav_servers: "./서버",
+    nav_deploy: "./등록",
+
+    hero_desc:
+      "제로 레이턴시 라우팅 허브 & 검증된 멀티플레이어 네트워크 클러스터",
+
+    nodes: "노드",
+    online: "온라인",
+    verified: "인증됨",
+
+    discover: "탐색",
+    featured: "추천",
+    lowest_ping: "최저 핑",
+    recently_added: "최근 추가",
+    feeling_lucky: "행운을 시험해볼까요?",
+    random_node: "랜덤 노드",
+    tap_discover: "탭하여 탐색",
+
+    about: "소개",
+    legal: "법적 고지",
+
+    visit: "./방문",
+    discord: "./discord",
+
+    agent_running: "node_agent · 실행 중",
+    rescan: "./재검색",
+    all_nodes: "모든 노드",
+
+    search_placeholder: "노드 검색...",
+    all_categories: "모든 카테고리",
+    other: "기타",
+
+    sort_default: "정렬: 기본",
+    sort_ping: "정렬: 핑",
+    sort_uptime: "정렬: 가동 시간",
+    sort_name: "정렬: 이름",
+
+    filter_all: "[전체]",
+    filter_live: "[온라인]",
+    filter_verified: "[인증됨]",
+    filter_pending: "[대기 중]",
+
+    back: "← 뒤로",
+
+    github: "GitHub",
+    discord_link: "Discord",
+    deploy: "등록",
+
+    quote:
+      "\"코드는 유머와 같습니다. 설명해야 한다면 좋지 않은 코드입니다.\"",
+
+    author_anonymous: "— 익명",
+
+    toggle_theme: "테마 전환",
+
+    deploy_title: "./등록 — 노드 제출",
+    deploy_note: "모든 제출은 수동으로 검토됩니다.",
+    server_name_label: "서버 이름 / 도메인 *",
+    server_name_placeholder: "example.gg",
+    category_label: "카테고리",
+    discord_invite_label: "Discord 초대 (선택 사항)",
+    discord_placeholder: "https://discord.gg/...",
+    contact_label: "연락처 *",
+    contact_placeholder: "user#0000",
+    owner_confirm:
+      "본인이 소유자 또는 승인된 관리자임을 확인합니다.",
+
+    cancel: "취소",
+    submit: "제출",
+
+    no_nodes: "노드를 찾을 수 없습니다",
+
+    status_online: "온라인",
+    status_offline: "오프라인",
+    pending: "대기 중",
+    secure: "보안",
+
+    verify_tooltip:
+      "SRV Hub에서 수동으로 검토 및 인증됨",
+
+    last_sweep_just_now:
+      "마지막 검색: 지금",
+
+    name_contact_required:
+      "이름과 연락처가 필요합니다",
+
+    confirm_ownership:
+      "소유권을 확인하세요",
+
+    already_exists:
+      "이미 존재합니다",
+
+    submitted:
+      "제출됨 — 검토 대기 중",
+
+    report_confirm:
+      "\"{name}\"을(를) 신고하시겠습니까?",
+
+    report_submitted:
+      "신고가 제출되었습니다",
+
+    discovered:
+      "발견됨: {name}",
+
+    rescan_triggered:
+      "[agent] 수동 재검색 시작...",
+
+    verification_completed:
+      "[agent] 전체 검증 완료",
+
+    rescan_completed:
+      "재검색 완료",
+
+    discord_coming:
+      "Discord가 곧 제공됩니다",
+
+    scanning:
+      "검색 중..."
   },
+
   fr: {
-    hero_desc: "hub de routage à latence zéro & cluster multijoueur vérifié",
-    nodes: "nœuds", online: "en ligne", verified: "vérifié",
-    discover: "découvrir", lowest_ping: "Ping le plus bas", recently_added: "Ajouté récemment",
-    feeling_lucky: "Vous vous sentez chanceux ?", random_node: "Nœud aléatoire", tap_discover: "Appuyez pour découvrir",
-    about: "À PROPOS", legal: "MENTIONS LÉGALES"
+    nav_home: "./accueil",
+    nav_discover: "./découvrir",
+    nav_servers: "./serveurs",
+    nav_deploy: "./publier",
+
+    hero_desc:
+      "hub de routage à latence zéro & cluster multijoueur vérifié",
+
+    nodes: "nœuds",
+    online: "en ligne",
+    verified: "vérifié",
+
+    discover: "découvrir",
+    featured: "À LA UNE",
+    lowest_ping: "Ping le plus bas",
+    recently_added: "Ajouté récemment",
+    feeling_lucky: "Vous vous sentez chanceux ?",
+    random_node: "Nœud aléatoire",
+    tap_discover: "Appuyez pour découvrir",
+
+    about: "À PROPOS",
+    legal: "MENTIONS LÉGALES",
+
+    visit: "./visiter",
+    discord: "./discord",
+
+    agent_running: "node_agent · actif",
+    rescan: "./rescanner",
+    all_nodes: "tous les nœuds",
+
+    search_placeholder: "rechercher un nœud...",
+    all_categories: "toutes les catégories",
+    other: "autre",
+
+    sort_default: "tri : défaut",
+    sort_ping: "tri : ping",
+    sort_uptime: "tri : uptime",
+    sort_name: "tri : nom",
+
+    filter_all: "[tous]",
+    filter_live: "[en ligne]",
+    filter_verified: "[vérifiés]",
+    filter_pending: "[en attente]",
+
+    back: "← retour",
+
+    github: "GitHub",
+    discord_link: "Discord",
+    deploy: "Publier",
+
+    quote:
+      "\"Le code est comme l'humour. S'il faut l'expliquer, c'est mauvais.\"",
+
+    author_anonymous: "— Anonyme",
+
+    toggle_theme: "Changer de thème",
+
+    deploy_title: "./publier — Envoyer un nœud",
+    deploy_note:
+      "Toutes les soumissions sont vérifiées manuellement.",
+    server_name_label:
+      "Nom du serveur / domaine *",
+    server_name_placeholder:
+      "exemple.gg",
+    category_label:
+      "Catégorie",
+    discord_invite_label:
+      "Invitation Discord (facultatif)",
+    discord_placeholder:
+      "https://discord.gg/...",
+    contact_label:
+      "Contact *",
+    contact_placeholder:
+      "utilisateur#0000",
+    owner_confirm:
+      "Je confirme être le propriétaire ou l'administrateur autorisé.",
+
+    cancel: "annuler",
+    submit: "envoyer",
+
+    no_nodes:
+      "aucun nœud trouvé",
+
+    status_online: "en ligne",
+    status_offline: "hors ligne",
+    pending: "en attente",
+    secure: "sécurisé",
+
+    verify_tooltip:
+      "Vérifié et contrôlé manuellement par SRV Hub",
+
+    last_sweep_just_now:
+      "dernier scan : maintenant",
+
+    name_contact_required:
+      "Nom et contact requis",
+
+    confirm_ownership:
+      "Confirmez la propriété",
+
+    already_exists:
+      "Existe déjà",
+
+    submitted:
+      "Envoyé — en attente de vérification",
+
+    report_confirm:
+      "Signaler \"{name}\" ?",
+
+    report_submitted:
+      "Signalement envoyé",
+
+    discovered:
+      "Découvert : {name}",
+
+    rescan_triggered:
+      "[agent] nouveau scan manuel lancé...",
+
+    verification_completed:
+      "[agent] vérification complète terminée",
+
+    rescan_completed:
+      "Scan terminé",
+
+    discord_coming:
+      "Discord bientôt disponible",
+
+    scanning:
+      "analyse..."
   },
+
   de: {
-    hero_desc: "Zero-Latency Routing Hub & verifiziertes Multiplayer-Netzwerk-Cluster",
-    nodes: "Knoten", online: "online", verified: "verifiziert",
-    discover: "entdecken", lowest_ping: "Niedrigster Ping", recently_added: "Kürzlich hinzugefügt",
-    feeling_lucky: "Fühlen Sie sich glücklich?", random_node: "Zufälliger Knoten", tap_discover: "Tippen zum Entdecken",
-    about: "ÜBER", legal: "RECHTLICHES"
+    nav_home: "./startseite",
+    nav_discover: "./entdecken",
+    nav_servers: "./server",
+    nav_deploy: "./veröffentlichen",
+
+    hero_desc:
+      "Zero-Latency Routing Hub & verifiziertes Multiplayer-Netzwerk-Cluster",
+
+    nodes: "Knoten",
+    online: "online",
+    verified: "verifiziert",
+
+    discover: "entdecken",
+    featured: "EMPFOHLEN",
+    lowest_ping: "Niedrigster Ping",
+    recently_added: "Kürzlich hinzugefügt",
+    feeling_lucky: "Fühlen Sie sich glücklich?",
+    random_node: "Zufälliger Knoten",
+    tap_discover: "Tippen zum Entdecken",
+
+    about: "ÜBER",
+    legal: "RECHTLICHES",
+
+    visit: "./besuchen",
+    discord: "./discord",
+
+    agent_running: "node_agent · läuft",
+    rescan: "./erneut prüfen",
+    all_nodes: "alle Knoten",
+
+    search_placeholder: "Knoten suchen...",
+    all_categories: "alle Kategorien",
+    other: "andere",
+
+    sort_default: "sortieren: Standard",
+    sort_ping: "sortieren: Ping",
+    sort_uptime: "sortieren: Uptime",
+    sort_name: "sortieren: Name",
+
+    filter_all: "[alle]",
+    filter_live: "[live]",
+    filter_verified: "[verifiziert]",
+    filter_pending: "[ausstehend]",
+
+    back: "← zurück",
+
+    github: "GitHub",
+    discord_link: "Discord",
+    deploy: "Veröffentlichen",
+
+    quote:
+      "\"Code ist wie Humor. Wenn man ihn erklären muss, ist er schlecht.\"",
+
+    author_anonymous: "— Anonym",
+
+    toggle_theme: "Theme wechseln",
+
+    deploy_title: "./veröffentlichen — Knoten einreichen",
+    deploy_note:
+      "Alle Einsendungen werden manuell geprüft.",
+    server_name_label:
+      "Servername / Domain *",
+    server_name_placeholder:
+      "beispiel.gg",
+    category_label:
+      "Kategorie",
+    discord_invite_label:
+      "Discord-Einladung (optional)",
+    discord_placeholder:
+      "https://discord.gg/...",
+    contact_label:
+      "Kontakt *",
+    contact_placeholder:
+      "benutzer#0000",
+    owner_confirm:
+      "Ich bestätige, dass ich Eigentümer oder autorisierter Administrator bin.",
+
+    cancel: "abbrechen",
+    submit: "senden",
+
+    no_nodes:
+      "keine Knoten gefunden",
+
+    status_online: "online",
+    status_offline: "offline",
+    pending: "ausstehend",
+    secure: "sicher",
+
+    verify_tooltip:
+      "Manuell vom SRV Hub geprüft und verifiziert",
+
+    last_sweep_just_now:
+      "letzter Scan: gerade eben",
+
+    name_contact_required:
+      "Name und Kontakt erforderlich",
+
+    confirm_ownership:
+      "Eigentum bestätigen",
+
+    already_exists:
+      "Existiert bereits",
+
+    submitted:
+      "Gesendet — Prüfung ausstehend",
+
+    report_confirm:
+      "\"{name}\" melden?",
+
+    report_submitted:
+      "Meldung gesendet",
+
+    discovered:
+      "Entdeckt: {name}",
+
+    rescan_triggered:
+      "[agent] manueller Scan gestartet...",
+
+    verification_completed:
+      "[agent] vollständige Verifizierung abgeschlossen",
+
+    rescan_completed:
+      "Scan abgeschlossen",
+
+    discord_coming:
+      "Discord kommt bald",
+
+    scanning:
+      "wird gescannt..."
   }
+
 };
 
-let currentLang = localStorage.getItem("srv_lang") || "en";
+let currentLang =
+  localStorage.getItem("srv_lang") || "en";
 
-// ========== DATA ==========
+
+/* ============================================================
+   TRANSLATION HELPER
+============================================================ */
+
+function t(key, vars = {}) {
+
+  const langData =
+    i18n[currentLang] || i18n.en;
+
+  let value =
+    langData[key] ||
+    i18n.en[key] ||
+    key;
+
+  Object.keys(vars).forEach(function(name) {
+    value = value.replace(
+      new RegExp("\\{" + name + "\\}", "g"),
+      vars[name]
+    );
+  });
+
+  return value;
+}
+
+
+/* ============================================================
+   DATA
+============================================================ */
+
 var initial = [
-  {id:"starzone",name:"starzone.se",avatar:"SZ",status:"online",verified:true,pending:false,ping:12,uptime:99.9,category:"DarkOrbit",site:"https://starzone.se/",discord:"https://discord.com/invite/starzone-12-glitchworld-750806110184669213",added:Date.now()-8e7,about:"StarZone is a private server dedicated to the classic space combat experience of DarkOrbit. Built by the community, for the community — focusing on fair gameplay, active events and long-term stability.",legal:"StarZone is an independent, non-profit fan project. DarkOrbit is a registered trademark of Bigpoint GmbH. All rights belong to their respective owners. This project is not affiliated with, endorsed by, or sponsored by Bigpoint GmbH."},
-  {id:"nexuscore",name:"nexuscore.net",avatar:"NX",status:"online",verified:true,pending:false,ping:28,uptime:98.7,category:"Rust",site:"#",discord:"#",added:Date.now()-6e7,about:"High-performance Rust server focused on vanilla+ experience.",legal:""},
-  {id:"voidlink",name:"voidlink.io",avatar:"VL",status:"online",verified:false,pending:false,ping:86,uptime:97.2,category:"FiveM",site:"#",discord:"#",added:Date.now()-4e7,about:"Roleplay focused FiveM server.",legal:""},
-  {id:"quantum",name:"quantum.gg",avatar:"QT",status:"online",verified:true,pending:false,ping:19,uptime:99.4,category:"CS2",site:"#",discord:"#",added:Date.now()-1e8,about:"Competitive CS2 community server.",legal:""},
-  {id:"ember",name:"ember.network",avatar:"EM",status:"online",verified:false,pending:false,ping:41,uptime:96.8,category:"Minecraft",site:"#",discord:"#",added:Date.now()-2e7,about:"Survival Minecraft network.",legal:""},
-  {id:"ghostnet",name:"ghostnet.xyz",avatar:"GN",status:"offline",verified:false,pending:false,ping:null,uptime:0,category:"other",site:"#",discord:"#",added:Date.now()-1.5e8,about:"Experimental node.",legal:""},
-  {id:"rustoria",name:"rustoria.co",avatar:"RS",status:"online",verified:true,pending:false,ping:22,uptime:99.1,category:"Rust",site:"#",discord:"#",added:Date.now()-5e7,about:"Popular Rust clan server.",legal:""},
-  {id:"fivemhub",name:"fivemhub.net",avatar:"FH",status:"online",verified:false,pending:false,ping:35,uptime:97.8,category:"FiveM",site:"#",discord:"#",added:Date.now()-1e7,about:"FiveM community hub.",legal:""}
+
+  {
+    id: "starzone",
+    name: "starzone.se",
+    avatar: "SZ",
+    status: "online",
+    verified: true,
+    pending: false,
+    ping: 12,
+    uptime: 99.9,
+    category: "DarkOrbit",
+    site: "https://starzone.se/",
+    discord:
+      "https://discord.com/invite/starzone-12-glitchworld-750806110184669213",
+    added: Date.now() - 8e7,
+    about:
+      "StarZone is a private server dedicated to the classic space combat experience of DarkOrbit. Built by the community, for the community — focusing on fair gameplay, active events and long-term stability.",
+    legal:
+      "StarZone is an independent, non-profit fan project. DarkOrbit is a registered trademark of Bigpoint GmbH. All rights belong to their respective owners. This project is not affiliated with, endorsed by, or sponsored by Bigpoint GmbH."
+  },
+
+  {
+    id: "nexuscore",
+    name: "nexuscore.net",
+    avatar: "NX",
+    status: "online",
+    verified: true,
+    pending: false,
+    ping: 28,
+    uptime: 98.7,
+    category: "Rust",
+    site: "#",
+    discord: "#",
+    added: Date.now() - 6e7,
+    about:
+      "High-performance Rust server focused on vanilla+ experience.",
+    legal: ""
+  },
+
+  {
+    id: "voidlink",
+    name: "voidlink.io",
+    avatar: "VL",
+    status: "online",
+    verified: false,
+    pending: false,
+    ping: 86,
+    uptime: 97.2,
+    category: "FiveM",
+    site: "#",
+    discord: "#",
+    added: Date.now() - 4e7,
+    about:
+      "Roleplay focused FiveM server.",
+    legal: ""
+  },
+
+  {
+    id: "quantum",
+    name: "quantum.gg",
+    avatar: "QT",
+    status: "online",
+    verified: true,
+    pending: false,
+    ping: 19,
+    uptime: 99.4,
+    category: "CS2",
+    site: "#",
+    discord: "#",
+    added: Date.now() - 1e8,
+    about:
+      "Competitive CS2 community server.",
+    legal: ""
+  },
+
+  {
+    id: "ember",
+    name: "ember.network",
+    avatar: "EM",
+    status: "online",
+    verified: false,
+    pending: false,
+    ping: 41,
+    uptime: 96.8,
+    category: "Minecraft",
+    site: "#",
+    discord: "#",
+    added: Date.now() - 2e7,
+    about:
+      "Survival Minecraft network.",
+    legal: ""
+  },
+
+  {
+    id: "ghostnet",
+    name: "ghostnet.xyz",
+    avatar: "GN",
+    status: "offline",
+    verified: false,
+    pending: false,
+    ping: null,
+    uptime: 0,
+    category: "other",
+    site: "#",
+    discord: "#",
+    added: Date.now() - 1.5e8,
+    about:
+      "Experimental node.",
+    legal: ""
+  },
+
+  {
+    id: "rustoria",
+    name: "rustoria.co",
+    avatar: "RS",
+    status: "online",
+    verified: true,
+    pending: false,
+    ping: 22,
+    uptime: 99.1,
+    category: "Rust",
+    site: "#",
+    discord: "#",
+    added: Date.now() - 5e7,
+    about:
+      "Popular Rust clan server.",
+    legal: ""
+  },
+
+  {
+    id: "fivemhub",
+    name: "fivemhub.net",
+    avatar: "FH",
+    status: "online",
+    verified: false,
+    pending: false,
+    ping: 35,
+    uptime: 97.8,
+    category: "FiveM",
+    site: "#",
+    discord: "#",
+    added: Date.now() - 1e7,
+    about:
+      "FiveM community hub.",
+    legal: ""
+  }
+
 ];
 
 var nodes = [];
@@ -764,440 +3781,1705 @@ var filter = "all";
 var lastScan = Date.now();
 
 try {
-  var saved = localStorage.getItem("srv_v332");
-  nodes = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(initial));
-} catch(e) { nodes = JSON.parse(JSON.stringify(initial)); }
+
+  var saved =
+    localStorage.getItem("srv_v332");
+
+  nodes = saved
+    ? JSON.parse(saved)
+    : JSON.parse(JSON.stringify(initial));
+
+} catch(e) {
+
+  nodes =
+    JSON.parse(JSON.stringify(initial));
+
+}
 
 function save() {
-  try { localStorage.setItem("srv_v332", JSON.stringify(nodes)); } catch(e) {}
+
+  try {
+
+    localStorage.setItem(
+      "srv_v332",
+      JSON.stringify(nodes)
+    );
+
+  } catch(e) {}
+
 }
 
-// ========== THEME ==========
+
+/* ============================================================
+   ESCAPE HTML
+============================================================ */
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+/* ============================================================
+   THEME
+============================================================ */
+
 function toggleTheme() {
+
   document.body.classList.toggle("light");
-  const isLight = document.body.classList.contains("light");
-  localStorage.setItem("srv_theme", isLight ? "light" : "dark");
+
+  const isLight =
+    document.body.classList.contains("light");
+
+  localStorage.setItem(
+    "srv_theme",
+    isLight ? "light" : "dark"
+  );
+
   updateThemeIcon(isLight);
 }
+
+
 function updateThemeIcon(isLight) {
-  const icon = document.getElementById("themeIcon");
+
+  const icon =
+    document.getElementById("themeIcon");
+
   if (!icon) return;
+
   if (isLight) {
-    icon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+
+    icon.innerHTML =
+      '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+
   } else {
-    icon.innerHTML = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+
+    icon.innerHTML =
+      '<circle cx="12" cy="12" r="5"/>' +
+      '<path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+
   }
 }
-if (localStorage.getItem("srv_theme") === "light") {
+
+if (
+  localStorage.getItem("srv_theme") === "light"
+) {
+
   document.body.classList.add("light");
   updateThemeIcon(true);
+
 }
 
-// ========== LANGUAGE ==========
+
+/* ============================================================
+   LANGUAGE
+============================================================ */
+
 function toggleLang() {
-  document.getElementById("langSelector").classList.toggle("open");
+
+  document
+    .getElementById("langSelector")
+    .classList.toggle("open");
+
 }
+
+
 function setLang(lang, label, e) {
+
   e.stopPropagation();
+
   currentLang = lang;
-  localStorage.setItem("srv_lang", lang);
-  document.getElementById("currentLang").textContent = label;
-  document.querySelectorAll(".lang-dropdown div").forEach(d => d.classList.remove("active"));
+
+  localStorage.setItem(
+    "srv_lang",
+    lang
+  );
+
+  document
+    .getElementById("currentLang")
+    .textContent = label;
+
+  document
+    .querySelectorAll(".lang-dropdown div")
+    .forEach(function(d) {
+      d.classList.remove("active");
+    });
+
   e.target.classList.add("active");
-  document.getElementById("langSelector").classList.remove("open");
+
+  document
+    .getElementById("langSelector")
+    .classList.remove("open");
+
   applyTranslations();
-  toast("Language → " + label);
-}
-function applyTranslations() {
-  const t = i18n[currentLang] || i18n.en;
-  document.querySelectorAll("[data-i18n]").forEach(el => {
-    const key = el.getAttribute("data-i18n");
-    if (t[key]) el.textContent = t[key];
-  });
-}
-document.addEventListener("click", function(e) {
-  const sel = document.getElementById("langSelector");
-  if (sel && !sel.contains(e.target)) sel.classList.remove("open");
-});
 
-// ========== UI HELPERS ==========
-function toast(msg) {
-  var w = document.getElementById("toasts");
-  var t = document.createElement("div");
-  t.className = "toast";
-  t.textContent = msg;
-  w.appendChild(t);
-  setTimeout(() => t.classList.add("show"), 10);
-  setTimeout(() => {
-    t.classList.remove("show");
-    setTimeout(() => t.remove(), 300);
-  }, 2600);
-}
+  render();
+  updateUI();
 
-function toggleMenu() {
-  document.getElementById("menuToggle").classList.toggle("active");
-  document.getElementById("navLinks").classList.toggle("active");
-}
-function closeMenu() {
-  document.getElementById("menuToggle").classList.remove("active");
-  document.getElementById("navLinks").classList.remove("active");
-}
+  if (
+    document
+      .getElementById("detailView")
+      .classList.contains("active")
+  ) {
 
-// ========== DETAIL ==========
-function showMain() {
-  document.getElementById("mainView").style.display = "block";
-  document.getElementById("detailView").classList.remove("active");
-  window.scrollTo({top:0,behavior:"smooth"});
-}
+    const title =
+      document.getElementById("detailName").textContent;
 
-function typeDetailTitle(name) {
-  const el = document.getElementById("detailTitle");
-  el.innerHTML = "";
-  let i = 0;
-  const full = "./" + name;
-  function tick() {
-    if (i <= full.length) {
-      const current = full.slice(0, i);
-      if (current.endsWith(name)) {
-        el.innerHTML = "./<span>" + name + "</span>";
-      } else {
-        el.textContent = current;
-      }
-      i++;
-      setTimeout(tick, 40);
+    const node =
+      nodes.find(function(n) {
+        return n.name === title;
+      });
+
+    if (node) {
+      showDetail(node.id, false);
     }
   }
-  tick();
+
+  toast("Language → " + label);
 }
 
-function showDetail(id) {
-  var node = nodes.find(n => n.id === id);
+
+function applyTranslations() {
+
+  const data =
+    i18n[currentLang] || i18n.en;
+
+  document
+    .querySelectorAll("[data-i18n]")
+    .forEach(function(el) {
+
+      const key =
+        el.getAttribute("data-i18n");
+
+      if (data[key] || i18n.en[key]) {
+
+        el.textContent =
+          data[key] || i18n.en[key];
+
+      }
+
+    });
+
+  document
+    .querySelectorAll("[data-i18n-placeholder]")
+    .forEach(function(el) {
+
+      const key =
+        el.getAttribute("data-i18n-placeholder");
+
+      el.placeholder =
+        data[key] ||
+        i18n.en[key] ||
+        el.placeholder;
+
+    });
+
+  document
+    .querySelectorAll("[data-i18n-title]")
+    .forEach(function(el) {
+
+      const key =
+        el.getAttribute("data-i18n-title");
+
+      el.title =
+        data[key] ||
+        i18n.en[key] ||
+        el.title;
+
+    });
+
+  document.documentElement.lang =
+    currentLang;
+
+}
+
+
+document.addEventListener("click", function(e) {
+
+  const sel =
+    document.getElementById("langSelector");
+
+  if (
+    sel &&
+    !sel.contains(e.target)
+  ) {
+
+    sel.classList.remove("open");
+
+  }
+
+});
+
+
+/* ============================================================
+   TOOLTIP MOBILE TAP
+============================================================ */
+
+document.addEventListener("click", function(e) {
+
+  const badge =
+    e.target.closest(
+      ".badge.verified, .verified-terminal"
+    );
+
+  document
+    .querySelectorAll(
+      ".badge.verified.tooltip-open, .verified-terminal.tooltip-open"
+    )
+    .forEach(function(el) {
+
+      if (el !== badge) {
+        el.classList.remove("tooltip-open");
+      }
+
+    });
+
+  if (badge) {
+
+    badge.classList.toggle(
+      "tooltip-open"
+    );
+
+  }
+
+});
+
+
+/* ============================================================
+   UI HELPERS
+============================================================ */
+
+function toast(msg) {
+
+  var w =
+    document.getElementById("toasts");
+
+  var t =
+    document.createElement("div");
+
+  t.className = "toast";
+
+  t.textContent = msg;
+
+  w.appendChild(t);
+
+  setTimeout(function() {
+    t.classList.add("show");
+  }, 10);
+
+  setTimeout(function() {
+
+    t.classList.remove("show");
+
+    setTimeout(function() {
+      t.remove();
+    }, 300);
+
+  }, 2600);
+
+}
+
+
+function toggleMenu() {
+
+  document
+    .getElementById("menuToggle")
+    .classList.toggle("active");
+
+  document
+    .getElementById("navLinks")
+    .classList.toggle("active");
+
+}
+
+
+function closeMenu() {
+
+  document
+    .getElementById("menuToggle")
+    .classList.remove("active");
+
+  document
+    .getElementById("navLinks")
+    .classList.remove("active");
+
+}
+
+
+/* ============================================================
+   DETAIL
+============================================================ */
+
+function showMain() {
+
+  document
+    .getElementById("mainView")
+    .style.display = "block";
+
+  document
+    .getElementById("detailView")
+    .classList.remove("active");
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+function typeDetailTitle(name) {
+
+  const el =
+    document.getElementById("detailTitle");
+
+  el.innerHTML = "";
+
+  let i = 0;
+
+  const full =
+    "./" + name;
+
+  function tick() {
+
+    if (i <= full.length) {
+
+      const current =
+        full.slice(0, i);
+
+      if (
+        current.endsWith(name)
+      ) {
+
+        el.innerHTML =
+          "./<span>" +
+          escapeHtml(name) +
+          "</span>";
+
+      } else {
+
+        el.textContent =
+          current;
+
+      }
+
+      i++;
+
+      setTimeout(tick, 40);
+    }
+
+  }
+
+  tick();
+
+}
+
+
+function showDetail(id, shouldScroll = true) {
+
+  var node =
+    nodes.find(function(n) {
+      return n.id === id;
+    });
+
   if (!node) return;
 
-  document.getElementById("mainView").style.display = "none";
-  document.getElementById("detailView").classList.add("active");
+  document
+    .getElementById("mainView")
+    .style.display = "none";
+
+  document
+    .getElementById("detailView")
+    .classList.add("active");
 
   typeDetailTitle(node.name);
 
-  document.getElementById("detailAvatar").textContent = node.avatar;
-  document.getElementById("detailName").textContent = node.name;
-  document.getElementById("detailCat").textContent = node.category;
+  document
+    .getElementById("detailAvatar")
+    .textContent = node.avatar;
 
-  let meta = `
-    <div>Status: <strong>${node.status}</strong></div>
-    <div>Ping: <strong>${node.ping != null ? node.ping + "ms" : "—"}</strong></div>
-    <div>Uptime: <strong>${node.uptime}%</strong></div>
-  `;
+  document
+    .getElementById("detailName")
+    .textContent = node.name;
+
+  document
+    .getElementById("detailCat")
+    .textContent = node.category;
+
+  let meta = "";
+
+  meta +=
+    "<div>Status: <strong>" +
+    escapeHtml(
+      node.status === "online"
+        ? t("status_online")
+        : t("status_offline")
+    ) +
+    "</strong></div>";
+
+  meta +=
+    "<div>Ping: <strong>" +
+    (
+      node.ping != null
+        ? escapeHtml(node.ping) + "ms"
+        : "—"
+    ) +
+    "</strong></div>";
+
+  meta +=
+    "<div>Uptime: <strong>" +
+    escapeHtml(node.uptime) +
+    "%</strong></div>";
+
   if (node.verified) {
-    meta += `<div class="verified-terminal">Verified</div>`;
-  }
-  document.getElementById("detailMeta").innerHTML = meta;
 
-  document.getElementById("detailAbout").innerHTML = "<p>" + (node.about || "No description available yet.") + "</p>";
-  document.getElementById("detailLegal").innerHTML = "<p>" + (node.legal || "No additional legal information.") + "</p>";
+    meta +=
+      '<div class="verified-terminal" ' +
+      'data-tooltip="' +
+      escapeHtml(t("verify_tooltip")) +
+      '">' +
+      escapeHtml(t("verified")) +
+      "</div>";
+
+  }
+
+  document
+    .getElementById("detailMeta")
+    .innerHTML = meta;
+
+  document
+    .getElementById("detailAbout")
+    .innerHTML =
+      "<p>" +
+      escapeHtml(
+        node.about ||
+        "No description available yet."
+      ) +
+      "</p>";
+
+  document
+    .getElementById("detailLegal")
+    .innerHTML =
+      "<p>" +
+      escapeHtml(
+        node.legal ||
+        "No additional legal information."
+      ) +
+      "</p>";
 
   let actions = "";
-  if (node.site && node.site !== "#") {
-    actions += `<a href="${node.site}" target="_blank" class="btn primary">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
-      ./visit
-    </a>`;
-  }
-  if (node.discord && node.discord !== "#") {
-    actions += `<a href="${node.discord}" target="_blank" class="btn discord">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-      ./discord
-    </a>`;
-  }
-  document.getElementById("detailActions").innerHTML = actions;
 
-  // Detail page Discover section
+  if (
+    node.site &&
+    node.site !== "#"
+  ) {
+
+    actions +=
+      '<a href="' +
+      escapeHtml(node.site) +
+      '" target="_blank" rel="noopener noreferrer" class="btn primary">' +
+
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+      '<path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>' +
+      "</svg>" +
+
+      escapeHtml(t("visit")) +
+
+      "</a>";
+
+  }
+
+  if (
+    node.discord &&
+    node.discord !== "#"
+  ) {
+
+    actions +=
+      '<a href="' +
+      escapeHtml(node.discord) +
+      '" target="_blank" rel="noopener noreferrer" class="btn discord">' +
+
+      '<svg viewBox="0 0 24 24" fill="currentColor">' +
+      '<path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>' +
+      "</svg>" +
+
+      escapeHtml(t("discord")) +
+
+      "</a>";
+
+  }
+
+  document
+    .getElementById("detailActions")
+    .innerHTML = actions;
+
   renderDetailDiscover(node.id);
 
-  window.scrollTo({top:0,behavior:"smooth"});
+  if (shouldScroll) {
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+  }
+
 }
 
+
+/* ============================================================
+   DETAIL DISCOVER
+============================================================ */
+
 function renderDetailDiscover(currentId) {
-  const online = nodes.filter(n => n.status === "online" && !n.pending && n.id !== currentId);
-  if (online.length === 0) {
-    document.getElementById("detailDiscover").innerHTML = "";
+
+  const online =
+    nodes.filter(function(n) {
+      return (
+        n.status === "online" &&
+        !n.pending &&
+        n.id !== currentId
+      );
+    });
+
+  if (!online.length) {
+
+    document
+      .getElementById("detailDiscover")
+      .innerHTML = "";
+
     return;
   }
 
-  const featured = online.filter(n => n.verified).sort((a,b) => b.uptime - a.uptime)[0] || online[0];
-  const lowest = online.slice().sort((a,b) => (a.ping||999) - (b.ping||999))[0];
+  const featured =
+    online
+      .filter(function(n) {
+        return n.verified;
+      })
+      .sort(function(a,b) {
+        return b.uptime - a.uptime;
+      })[0] || online[0];
 
-  let html = `
-    <div class="featured">
-      <div class="tag">FEATURED</div>
-      <h3>${featured.name}</h3>
-      <div class="meta">${featured.category} · ${featured.ping}ms · ${featured.uptime}% uptime</div>
-      <div class="btns">
-        <a href="#" class="btn primary" onclick="showDetail('${featured.id}'); return false;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
-          ./visit
-        </a>
-      </div>
-    </div>
-    <div class="side">
-      <div class="mini" onclick="showDetail('${lowest.id}')">
-        <div class="label">Lowest Ping</div>
-        <div class="name">${lowest.name}</div>
-        <div class="sub">${lowest.ping}ms · ${lowest.category}</div>
-      </div>
-      <div class="mini" onclick="randomNode()">
-        <div class="label">Feeling lucky?</div>
-        <div class="name">Random Node</div>
-        <div class="sub">Tap to discover</div>
-      </div>
-    </div>
-  `;
-  document.getElementById("detailDiscover").innerHTML = html;
+  const lowest =
+    online
+      .slice()
+      .sort(function(a,b) {
+        return (a.ping || 999) -
+               (b.ping || 999);
+      })[0];
+
+  let html = "";
+
+  html +=
+    '<div class="featured">' +
+
+      '<div class="tag">' +
+      escapeHtml(t("featured")) +
+      "</div>" +
+
+      "<h3>" +
+      escapeHtml(featured.name) +
+      "</h3>" +
+
+      '<div class="meta">' +
+      escapeHtml(featured.category) +
+      " · " +
+      escapeHtml(featured.ping) +
+      "ms · " +
+      escapeHtml(featured.uptime) +
+      "% uptime" +
+      "</div>" +
+
+      '<div class="btns">' +
+
+        '<a href="#" class="btn primary" ' +
+        'onclick="showDetail(\'' +
+        escapeHtml(featured.id) +
+        '\'); return false;">' +
+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+          '<path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>' +
+          "</svg>" +
+
+          escapeHtml(t("visit")) +
+
+        "</a>" +
+
+      "</div>" +
+
+    "</div>";
+
+  html +=
+    '<div class="side">' +
+
+      '<div class="mini" onclick="showDetail(\'' +
+      escapeHtml(lowest.id) +
+      '\')">' +
+
+        '<div class="label">' +
+        escapeHtml(t("lowest_ping")) +
+        "</div>" +
+
+        '<div class="name">' +
+        escapeHtml(lowest.name) +
+        "</div>" +
+
+        '<div class="sub">' +
+        escapeHtml(lowest.ping) +
+        "ms · " +
+        escapeHtml(lowest.category) +
+        "</div>" +
+
+      "</div>" +
+
+      '<div class="mini" onclick="randomNode()">' +
+
+        '<div class="label">' +
+        escapeHtml(t("feeling_lucky")) +
+        "</div>" +
+
+        '<div class="name">' +
+        escapeHtml(t("random_node")) +
+        "</div>" +
+
+        '<div class="sub">' +
+        escapeHtml(t("tap_discover")) +
+        "</div>" +
+
+      "</div>" +
+
+    "</div>";
+
+  document
+    .getElementById("detailDiscover")
+    .innerHTML = html;
+
 }
 
-// ========== RENDER ==========
+
+/* ============================================================
+   UPDATE UI
+============================================================ */
+
 function updateUI() {
-  document.getElementById("sTotal").textContent = nodes.length;
-  document.getElementById("sOnline").textContent = nodes.filter(n => n.status === "online").length;
-  document.getElementById("sVerified").textContent = nodes.filter(n => n.verified).length;
 
-  var online = nodes.filter(n => n.status === "online" && !n.pending);
-  if (online.length === 0) return;
+  document
+    .getElementById("sTotal")
+    .textContent = nodes.length;
 
-  var featured = online.filter(n => n.verified).sort((a,b) => b.uptime - a.uptime)[0] || online[0];
-  document.getElementById("fName").textContent = featured.name;
-  document.getElementById("fMeta").textContent = featured.category + " · " + featured.ping + "ms · " + featured.uptime + "% uptime";
-  document.getElementById("fVisit").href = (featured.site && featured.site !== "#") ? featured.site : "#";
-  document.getElementById("fDiscord").href = (featured.discord && featured.discord !== "#") ? featured.discord : "#";
+  document
+    .getElementById("sOnline")
+    .textContent =
+      nodes.filter(function(n) {
+        return n.status === "online";
+      }).length;
 
-  var lowest = online.slice().sort((a,b) => (a.ping||999) - (b.ping||999))[0];
-  document.getElementById("lowName").textContent = lowest.name;
-  document.getElementById("lowSub").textContent = lowest.ping + "ms · " + lowest.category;
+  document
+    .getElementById("sVerified")
+    .textContent =
+      nodes.filter(function(n) {
+        return n.verified;
+      }).length;
 
-  var newest = nodes.slice().sort((a,b) => (b.added||0) - (a.added||0))[0];
-  document.getElementById("newName").textContent = newest.name;
-  document.getElementById("newSub").textContent = newest.category + (newest.pending ? " · pending" : "");
+  var online =
+    nodes.filter(function(n) {
+      return (
+        n.status === "online" &&
+        !n.pending
+      );
+    });
+
+  if (!online.length) return;
+
+  var featured =
+    online
+      .filter(function(n) {
+        return n.verified;
+      })
+      .sort(function(a,b) {
+        return b.uptime - a.uptime;
+      })[0] || online[0];
+
+  document
+    .getElementById("fName")
+    .textContent = featured.name;
+
+  document
+    .getElementById("fMeta")
+    .textContent =
+      featured.category +
+      " · " +
+      featured.ping +
+      "ms · " +
+      featured.uptime +
+      "% uptime";
+
+  document
+    .getElementById("fVisit")
+    .href =
+      featured.site &&
+      featured.site !== "#"
+        ? featured.site
+        : "#";
+
+  document
+    .getElementById("fDiscord")
+    .href =
+      featured.discord &&
+      featured.discord !== "#"
+        ? featured.discord
+        : "#";
+
+  var lowest =
+    online
+      .slice()
+      .sort(function(a,b) {
+        return (a.ping || 999) -
+               (b.ping || 999);
+      })[0];
+
+  document
+    .getElementById("lowName")
+    .textContent = lowest.name;
+
+  document
+    .getElementById("lowSub")
+    .textContent =
+      lowest.ping +
+      "ms · " +
+      lowest.category;
+
+  var newest =
+    nodes
+      .slice()
+      .sort(function(a,b) {
+        return (b.added || 0) -
+               (a.added || 0);
+      })[0];
+
+  document
+    .getElementById("newName")
+    .textContent = newest.name;
+
+  document
+    .getElementById("newSub")
+    .textContent =
+      newest.category +
+      (
+        newest.pending
+          ? " · " + t("pending")
+          : ""
+      );
+
 }
+
+
+/* ============================================================
+   RANDOM NODE
+============================================================ */
 
 function randomNode() {
-  var online = nodes.filter(n => n.status === "online" && !n.pending);
+
+  var online =
+    nodes.filter(function(n) {
+      return (
+        n.status === "online" &&
+        !n.pending
+      );
+    });
+
   if (!online.length) return;
-  var pick = online[Math.floor(Math.random() * online.length)];
-  toast("Discovered: " + pick.name);
+
+  var pick =
+    online[
+      Math.floor(
+        Math.random() * online.length
+      )
+    ];
+
+  toast(
+    t("discovered", {
+      name: pick.name
+    })
+  );
+
   showDetail(pick.id);
+
 }
 
+
+/* ============================================================
+   RENDER
+============================================================ */
+
 function render() {
-  var q = document.getElementById("search").value.toLowerCase().trim();
-  var cat = document.getElementById("cat").value;
-  var sort = document.getElementById("sort").value;
 
-  var list = nodes.filter(n => {
-    var matchQ = n.name.toLowerCase().includes(q) || n.id.includes(q);
-    var matchC = cat === "all" || n.category === cat;
-    var matchF = true;
-    if (filter === "online") matchF = n.status === "online";
-    if (filter === "verified") matchF = n.verified;
-    if (filter === "pending") matchF = n.pending;
-    return matchQ && matchC && matchF;
-  });
+  var q =
+    document
+      .getElementById("search")
+      .value
+      .toLowerCase()
+      .trim();
 
-  if (sort === "ping") list.sort((a,b) => (a.ping||999) - (b.ping||999));
-  if (sort === "uptime") list.sort((a,b) => (b.uptime||0) - (a.uptime||0));
-  if (sort === "name") list.sort((a,b) => a.name.localeCompare(b.name));
+  var cat =
+    document
+      .getElementById("cat")
+      .value;
 
-  document.getElementById("count").textContent = "(" + list.length + ")";
-  var grid = document.getElementById("grid");
+  var sort =
+    document
+      .getElementById("sort")
+      .value;
 
-  if (list.length === 0) {
-    grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);font-family:var(--font);">no nodes found</div>';
+  var list =
+    nodes.filter(function(n) {
+
+      var matchQ =
+        n.name
+          .toLowerCase()
+          .includes(q) ||
+        n.id
+          .toLowerCase()
+          .includes(q);
+
+      var matchC =
+        cat === "all" ||
+        n.category === cat;
+
+      var matchF = true;
+
+      if (filter === "online") {
+        matchF =
+          n.status === "online";
+      }
+
+      if (filter === "verified") {
+        matchF = n.verified;
+      }
+
+      if (filter === "pending") {
+        matchF = n.pending;
+      }
+
+      return (
+        matchQ &&
+        matchC &&
+        matchF
+      );
+
+    });
+
+  if (sort === "ping") {
+
+    list.sort(function(a,b) {
+      return (
+        (a.ping || 999) -
+        (b.ping || 999)
+      );
+    });
+
+  }
+
+  if (sort === "uptime") {
+
+    list.sort(function(a,b) {
+      return (
+        (b.uptime || 0) -
+        (a.uptime || 0)
+      );
+    });
+
+  }
+
+  if (sort === "name") {
+
+    list.sort(function(a,b) {
+      return a.name.localeCompare(
+        b.name
+      );
+    });
+
+  }
+
+  document
+    .getElementById("count")
+    .textContent =
+      "(" + list.length + ")";
+
+  var grid =
+    document.getElementById("grid");
+
+  if (!list.length) {
+
+    grid.innerHTML =
+      '<div style="' +
+      'text-align:center;' +
+      'padding:40px;' +
+      'color:var(--muted);' +
+      'font-family:var(--font);">' +
+      escapeHtml(t("no_nodes")) +
+      "</div>";
+
     return;
   }
 
   var html = "";
-  list.forEach(n => {
-    var off = n.status === "offline";
-    var siteOff = !n.site || n.site === "#" || off;
-    var discOff = !n.discord || n.discord === "#" || off;
+
+  list.forEach(function(n) {
+
+    var off =
+      n.status === "offline";
+
+    var siteOff =
+      !n.site ||
+      n.site === "#" ||
+      off;
+
+    var discOff =
+      !n.discord ||
+      n.discord === "#" ||
+      off;
 
     var badges = "";
-    if (n.category) badges += '<span class="badge cat">' + n.category + '</span>';
-    if (n.verified) badges += '<span class="badge verified">verified</span>';
-    if (n.pending) badges += '<span class="badge pending">pending</span>';
-    badges += '<span class="badge ' + (off ? "offline" : "online") + '">' + n.status + '</span>';
 
-    html += '<div class="card' + (off ? ' offline' : '') + '">';
-    html += '<div class="card-head"><div class="card-left">';
-    html += '<div class="avatar">' + n.avatar + '</div>';
-    html += '<a class="card-title" onclick="showDetail(\'' + n.id + '\')">' + n.name + '</a>';
-    html += '</div><div class="badges">' + badges + '</div></div>';
-    html += '<div class="info">ping: ' + (n.ping != null ? n.ping + 'ms' : '—') + ' · protocol: ' + (off ? '—' : 'secure') + ' · uptime: ' + n.uptime + '%</div>';
-    html += '<div class="actions">';
-    html += `<a class="btn primary\( {siteOff ? ' disabled' : ''}" href=" \){siteOff ? '#' : n.site}" target="_blank">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
-      ./visit
-    </a>`;
-    html += `<a class="btn discord\( {discOff ? ' disabled' : ''}" href=" \){discOff ? '#' : n.discord}" target="_blank">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-      ./discord
-    </a>`;
-    html += '<button class="btn-report" onclick="report(\'' + n.name.replace(/'/g,"\\'") + '\')">report</button>';
-    html += '</div></div>';
+    if (n.category) {
+
+      badges +=
+        '<span class="badge cat">' +
+        escapeHtml(n.category) +
+        "</span>";
+
+    }
+
+    if (n.verified) {
+
+      badges +=
+        '<span class="badge verified" ' +
+        'data-tooltip="' +
+        escapeHtml(t("verify_tooltip")) +
+        '">' +
+        escapeHtml(t("verified")) +
+        "</span>";
+
+    }
+
+    if (n.pending) {
+
+      badges +=
+        '<span class="badge pending">' +
+        escapeHtml(t("pending")) +
+        "</span>";
+
+    }
+
+    badges +=
+      '<span class="badge ' +
+      (off ? "offline" : "online") +
+      '">' +
+      escapeHtml(
+        off
+          ? t("status_offline")
+          : t("status_online")
+      ) +
+      "</span>";
+
+    html +=
+      '<div class="card' +
+      (off ? " offline" : "") +
+      '">';
+
+    html +=
+      '<div class="card-head">';
+
+    html +=
+      '<div class="card-left">';
+
+    html +=
+      '<div class="avatar">' +
+      escapeHtml(n.avatar) +
+      "</div>";
+
+    html +=
+      '<a class="card-title" ' +
+      'href="#" ' +
+      'onclick="showDetail(\'' +
+      escapeHtml(n.id) +
+      '\'); return false;">' +
+      escapeHtml(n.name) +
+      "</a>";
+
+    html +=
+      "</div>";
+
+    html +=
+      '<div class="badges">' +
+      badges +
+      "</div>";
+
+    html +=
+      "</div>";
+
+    html +=
+      '<div class="info">' +
+      "ping: " +
+      (
+        n.ping != null
+          ? escapeHtml(n.ping) + "ms"
+          : "—"
+      ) +
+      " · protocol: " +
+      (
+        off
+          ? "—"
+          : escapeHtml(t("secure"))
+      ) +
+      " · uptime: " +
+      escapeHtml(n.uptime) +
+      "%" +
+      "</div>";
+
+    html +=
+      '<div class="actions">';
+
+    html +=
+      '<a class="btn primary' +
+      (siteOff ? " disabled" : "") +
+      '" href="' +
+      (
+        siteOff
+          ? "#"
+          : escapeHtml(n.site)
+      ) +
+      '" target="_blank" rel="noopener noreferrer">';
+
+    html +=
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+      '<path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>' +
+      "</svg>";
+
+    html +=
+      escapeHtml(t("visit"));
+
+    html +=
+      "</a>";
+
+    html +=
+      '<a class="btn discord' +
+      (discOff ? " disabled" : "") +
+      '" href="' +
+      (
+        discOff
+          ? "#"
+          : escapeHtml(n.discord)
+      ) +
+      '" target="_blank" rel="noopener noreferrer">';
+
+    html +=
+      '<svg viewBox="0 0 24 24" fill="currentColor">' +
+      '<path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>' +
+      "</svg>";
+
+    html +=
+      escapeHtml(t("discord"));
+
+    html +=
+      "</a>";
+
+    html +=
+      '<button class="btn-report" ' +
+      'onclick="report(\'' +
+      escapeHtml(
+        n.name
+          .replace(/\\/g, "\\\\")
+          .replace(/'/g, "\\'")
+      ) +
+      '\')">' +
+      "report" +
+      "</button>";
+
+    html +=
+      "</div>";
+
+    html +=
+      "</div>";
+
   });
+
   grid.innerHTML = html;
+
 }
+
+
+/* ============================================================
+   FILTER
+============================================================ */
 
 function setFilter(f, btn) {
+
   filter = f;
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+
+  document
+    .querySelectorAll(".tab")
+    .forEach(function(t) {
+      t.classList.remove("active");
+    });
+
   btn.classList.add("active");
+
   render();
+
 }
 
-// ========== DEPLOY ==========
+
+/* ============================================================
+   DEPLOY
+============================================================ */
+
 function openDeploy() {
-  document.getElementById("deployModal").classList.add("active");
-  document.body.classList.add("modal-open");
+
+  document
+    .getElementById("deployModal")
+    .classList.add("active");
+
+  document.body.classList.add(
+    "modal-open"
+  );
+
 }
+
+
 function closeDeploy() {
-  document.getElementById("deployModal").classList.remove("active");
-  document.body.classList.remove("modal-open");
+
+  document
+    .getElementById("deployModal")
+    .classList.remove("active");
+
+  document.body.classList.remove(
+    "modal-open"
+  );
+
 }
-document.getElementById("deployModal").addEventListener("click", function(e) {
-  if (e.target === this) closeDeploy();
-});
+
+
+document
+  .getElementById("deployModal")
+  .addEventListener(
+    "click",
+    function(e) {
+
+      if (e.target === this) {
+        closeDeploy();
+      }
+
+    }
+  );
+
 
 function submit() {
-  var name = document.getElementById("dName").value.trim();
-  var cat = document.getElementById("dCat").value;
-  var disc = document.getElementById("dDiscord").value.trim();
-  var contact = document.getElementById("dContact").value.trim();
-  var owner = document.getElementById("dOwner").checked;
 
-  if (!name || !contact) return toast("Name and contact required");
-  if (!owner) return toast("Confirm ownership");
-  if (nodes.some(n => n.name.toLowerCase() === name.toLowerCase())) return toast("Already exists");
+  var name =
+    document
+      .getElementById("dName")
+      .value
+      .trim();
+
+  var cat =
+    document
+      .getElementById("dCat")
+      .value;
+
+  var disc =
+    document
+      .getElementById("dDiscord")
+      .value
+      .trim();
+
+  var contact =
+    document
+      .getElementById("dContact")
+      .value
+      .trim();
+
+  var owner =
+    document
+      .getElementById("dOwner")
+      .checked;
+
+  if (!name || !contact) {
+
+    return toast(
+      t("name_contact_required")
+    );
+
+  }
+
+  if (!owner) {
+
+    return toast(
+      t("confirm_ownership")
+    );
+
+  }
+
+  if (
+    nodes.some(function(n) {
+      return (
+        n.name.toLowerCase() ===
+        name.toLowerCase()
+      );
+    })
+  ) {
+
+    return toast(
+      t("already_exists")
+    );
+
+  }
 
   nodes.unshift({
-    id: name.toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,12) || "n"+Date.now(),
+
+    id:
+      name
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "")
+        .slice(0, 12) ||
+      "n" + Date.now(),
+
     name: name,
-    avatar: name.slice(0,2).toUpperCase(),
+
+    avatar:
+      name
+        .slice(0,2)
+        .toUpperCase(),
+
     status: "online",
+
     verified: false,
+
     pending: true,
-    ping: Math.floor(Math.random()*40)+20,
-    uptime: +(96+Math.random()*3).toFixed(1),
+
+    ping:
+      Math.floor(
+        Math.random() * 40
+      ) + 20,
+
+    uptime:
+      +(
+        96 +
+        Math.random() * 3
+      ).toFixed(1),
+
     category: cat,
+
     site: "#",
-    discord: disc || "#",
+
+    discord:
+      disc || "#",
+
     added: Date.now(),
+
     about: "",
+
     legal: ""
+
   });
+
   save();
+
   render();
+
   updateUI();
-  log("[agent] new submission: " + name);
-  toast("Submitted — pending review");
+
+  log(
+    "[agent] new submission: " +
+    name
+  );
+
+  toast(
+    t("submitted")
+  );
+
   closeDeploy();
-  document.getElementById("dName").value = "";
-  document.getElementById("dDiscord").value = "";
-  document.getElementById("dContact").value = "";
-  document.getElementById("dOwner").checked = false;
+
+  document
+    .getElementById("dName")
+    .value = "";
+
+  document
+    .getElementById("dDiscord")
+    .value = "";
+
+  document
+    .getElementById("dContact")
+    .value = "";
+
+  document
+    .getElementById("dOwner")
+    .checked = false;
+
 }
+
+
+/* ============================================================
+   REPORT
+============================================================ */
 
 function report(name) {
-  if (!confirm("Report \"" + name + "\"?")) return;
-  log("[agent] report received: " + name);
-  toast("Report submitted");
+
+  if (
+    !confirm(
+      t("report_confirm", {
+        name: name
+      })
+    )
+  ) {
+    return;
+  }
+
+  log(
+    "[agent] report received: " +
+    name
+  );
+
+  toast(
+    t("report_submitted")
+  );
+
 }
 
-// ========== AGENT ==========
+
+/* ============================================================
+   AGENT
+============================================================ */
+
 function log(msg) {
-  var el = document.getElementById("log");
-  var time = new Date().toLocaleTimeString("en-GB", {hour12:false});
-  el.innerHTML = "[" + time + "] " + msg + "<br>" + el.innerHTML;
-  var lines = el.innerHTML.split("<br>");
-  if (lines.length > 5) el.innerHTML = lines.slice(0,5).join("<br>");
+
+  var el =
+    document.getElementById("log");
+
+  var time =
+    new Date().toLocaleTimeString(
+      "en-GB",
+      {
+        hour12: false
+      }
+    );
+
+  var safeMsg =
+    escapeHtml(msg);
+
+  el.innerHTML =
+    "[" +
+    time +
+    "] " +
+    safeMsg +
+    "<br>" +
+    el.innerHTML;
+
+  var lines =
+    el.innerHTML.split("<br>");
+
+  if (lines.length > 5) {
+
+    el.innerHTML =
+      lines
+        .slice(0,5)
+        .join("<br>");
+
+  }
+
 }
+
 
 function rescan() {
-  var btn = document.getElementById("rescanBtn");
+
+  var btn =
+    document.getElementById(
+      "rescanBtn"
+    );
+
   btn.disabled = true;
-  btn.textContent = "scanning...";
-  log("[agent] manual rescan triggered...");
+
+  btn.textContent =
+    t("scanning");
+
+  log(
+    t("rescan_triggered")
+  );
+
   setTimeout(function() {
-    nodes.forEach(n => {
-      if (n.status !== "online" || n.pending) return;
-      n.ping = Math.max(8, Math.min(130, (n.ping||30) + Math.floor(Math.random()*7)-3));
-      n.uptime = Math.min(99.9, Math.max(95, +(n.uptime + (Math.random()*0.05-0.025)).toFixed(1)));
+
+    nodes.forEach(function(n) {
+
+      if (
+        n.status !== "online" ||
+        n.pending
+      ) {
+        return;
+      }
+
+      n.ping =
+        Math.max(
+          8,
+          Math.min(
+            130,
+            (n.ping || 30) +
+            Math.floor(
+              Math.random() * 7
+            ) - 3
+          )
+        );
+
+      n.uptime =
+        Math.min(
+          99.9,
+          Math.max(
+            95,
+            +(
+              n.uptime +
+              (
+                Math.random() *
+                0.05 -
+                0.025
+              )
+            ).toFixed(1)
+          )
+        );
+
     });
+
     save();
+
     render();
+
     updateUI();
-    lastScan = Date.now();
-    log("[agent] full verification completed");
+
+    lastScan =
+      Date.now();
+
+    log(
+      t("verification_completed")
+    );
+
     btn.disabled = false;
-    btn.textContent = "./rescan";
-    toast("Rescan completed");
+
+    btn.textContent =
+      t("rescan");
+
+    toast(
+      t("rescan_completed")
+    );
+
   }, 1000);
+
 }
+
 
 function updateTime() {
-  var d = Math.floor((Date.now() - lastScan)/1000);
-  var el = document.getElementById("lastScan");
-  if (d < 5) el.textContent = "last sweep: just now";
-  else if (d < 60) el.textContent = "last sweep: " + d + "s ago";
-  else el.textContent = "last sweep: " + Math.floor(d/60) + "m ago";
+
+  var d =
+    Math.floor(
+      (
+        Date.now() -
+        lastScan
+      ) / 1000
+    );
+
+  var el =
+    document.getElementById(
+      "lastScan"
+    );
+
+  if (d < 5) {
+
+    el.textContent =
+      t("last_sweep_just_now");
+
+  } else if (d < 60) {
+
+    el.textContent =
+      "last sweep: " +
+      d +
+      "s ago";
+
+  } else {
+
+    el.textContent =
+      "last sweep: " +
+      Math.floor(d / 60) +
+      "m ago";
+
+  }
+
 }
+
+
+/* ============================================================
+   HERO TITLE
+============================================================ */
 
 function typeTitle() {
-  var text = "./cluster_nodes";
-  var el = document.getElementById("heroTitle");
+
+  var text =
+    "./cluster_nodes";
+
+  var el =
+    document.getElementById(
+      "heroTitle"
+    );
+
   var i = 0;
+
   function tick() {
+
     if (i <= text.length) {
-      var t = text.slice(0, i);
-      el.innerHTML = t.endsWith("nodes") ? "./cluster_<span>nodes</span>" : t;
+
+      var value =
+        text.slice(0, i);
+
+      el.innerHTML =
+        value.endsWith("nodes")
+          ? "./cluster_<span>nodes</span>"
+          : escapeHtml(value);
+
       i++;
-      setTimeout(tick, 55);
+
+      setTimeout(
+        tick,
+        55
+      );
     }
+
   }
+
   tick();
+
 }
 
-// INIT
-document.getElementById("currentLang").textContent = {
-  en:"English", tr:"Türkçe", pt:"Português", es:"Español",
-  ja:"日本語", ko:"한국어", fr:"Français", de:"Deutsch"
-}[currentLang] || "English";
+
+/* ============================================================
+   LANGUAGE LABEL
+============================================================ */
+
+const languageLabels = {
+
+  en: "English",
+  tr: "Türkçe",
+  pt: "Português",
+  es: "Español",
+  ja: "日本語",
+  ko: "한국어",
+  fr: "Français",
+  de: "Deutsch"
+
+};
+
+
+/* ============================================================
+   INIT
+============================================================ */
+
+document
+  .getElementById("currentLang")
+  .textContent =
+    languageLabels[currentLang] ||
+    "English";
 
 applyTranslations();
+
 render();
+
 updateUI();
+
 typeTitle();
-log("[agent] node agent online · verification active");
+
+log(
+  "[agent] node agent online · verification active"
+);
+
+
+/* ============================================================
+   AGENT HEARTBEAT
+============================================================ */
 
 setInterval(function() {
+
   var msgs = [
+
     "[agent] heartbeat from starzone.se",
+
     "[agent] quantum.gg verified",
+
     "[agent] cluster health ok",
+
     "[agent] scanning voidlink.io...",
+
     "[agent] security sweep done"
+
   ];
-  log(msgs[Math.floor(Math.random()*msgs.length)]);
-  lastScan = Date.now();
+
+  log(
+    msgs[
+      Math.floor(
+        Math.random() *
+        msgs.length
+      )
+    ]
+  );
+
+  lastScan =
+    Date.now();
+
 }, 11000);
 
-setInterval(updateTime, 3000);
 
-document.addEventListener("keydown", function(e) {
-  if (e.key === "Escape") {
-    closeDeploy();
-    showMain();
+/* ============================================================
+   TIME
+============================================================ */
+
+setInterval(
+  updateTime,
+  3000
+);
+
+
+/* ============================================================
+   ESCAPE KEY
+============================================================ */
+
+document.addEventListener(
+  "keydown",
+  function(e) {
+
+    if (e.key === "Escape") {
+
+      closeDeploy();
+
+      closeMenu();
+
+      document
+        .querySelectorAll(
+          ".tooltip-open"
+        )
+        .forEach(function(el) {
+          el.classList.remove(
+            "tooltip-open"
+          );
+        });
+
+      showMain();
+
+    }
+
   }
-});
+);
+
 </script>
+
 </body>
 </html>
