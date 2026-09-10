@@ -303,7 +303,7 @@ body.light .featured {
 }
 .select:hover { border-color: var(--accent); color: var(--accent); }
 
-.tabs { display: flex; gap: 6px; margin-bottom: 13px; flex-wrap: wrap; }
+.tabs { display: flex; gap rel="noopener">6px; margin-bottom: 13px; flex-wrap: wrap; }
 .tab {
   background: transparent; border: 1px solid transparent;
   color: var(--muted); font-family: var(--font); font-size: 12px;
@@ -424,6 +424,62 @@ footer {
 .author { font-size: 10px; color: var(--accent); margin-bottom: 12px; }
 .copyright { font-size: 11px; color: var(--muted); }
 
+/* Language Selector - sağ alt */
+.lang-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  position: relative;
+  transition: 0.2s;
+  user-select: none;
+}
+.lang-selector:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.lang-selector svg {
+  width: 14px;
+  height: 14px;
+}
+.lang-dropdown {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-width: 180px;
+  padding: 6px 0;
+  display: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  z-index: 50;
+}
+.lang-selector.open .lang-dropdown {
+  display: block;
+}
+.lang-dropdown div {
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  transition: 0.15s;
+  text-align: left;
+}
+.lang-dropdown div:hover {
+  background: rgba(34,211,160,0.08);
+  color: var(--accent);
+}
+.lang-dropdown div.active {
+  color: var(--accent);
+}
+
 /* TOAST + MODAL */
 .toast-wrap {
   position: fixed; bottom: 20px; right: 20px; z-index: 3000;
@@ -515,7 +571,6 @@ footer {
 <nav>
   <a href="#" class="brand" onclick="return false;">
     <div class="logo">
-      <!-- Yeni Logo: Daha karakteristik katmanlı node / network ikonu -->
       <svg viewBox="0 0 24 24" fill="none">
         <path d="M12 2L4 6v4l8 4 8-4V6l-8-4z" fill="currentColor" opacity="0.3"/>
         <path d="M4 14l8 4 8-4" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -627,7 +682,8 @@ footer {
         <option value="Rust">Rust</option>
         <option value="FiveM">FiveM</option>
         <option value="CS2">CS2</option>
-        <option value="Other">Other</option>
+        <option value="DarkOrbit">DarkOrbit</option>
+        <option value="other">other</option>
       </select>
       <select class="select" id="sort" onchange="render()">
         <option value="default">sort: default</option>
@@ -667,6 +723,31 @@ footer {
     <div class="quote" id="quote">"Code is like humor. When you have to explain it, it's bad."</div>
     <div class="author">— Anonim</div>
     <div class="copyright">© 2026 SRV Hub · v3.2.0 · Built with passion</div>
+
+    <!-- Dil Seçici - Sağ alt -->
+    <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+      <div class="lang-selector" id="langSelector" onclick="toggleLang()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+        </svg>
+        <span id="currentLang">English</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9l6 6 6-6"/>
+        </svg>
+
+        <div class="lang-dropdown">
+          <div class="active" onclick="setLang('English', event)">English</div>
+          <div onclick="setLang('Türkçe', event)">Türkçe</div>
+          <div onclick="setLang('Português', event)">Português (Brasil)</div>
+          <div onclick="setLang('Español', event)">Español</div>
+          <div onclick="setLang('日本語', event)">日本語</div>
+          <div onclick="setLang('한국어',한국어', event)">한국어</div>
+          <div onclick="setLang('Français', event)">Français</div>
+          <div onclick="setLang('Deutsch', event)">Deutsch</div>
+        </div>
+      </div>
+    </div>
   </footer>
 </div>
 
@@ -683,7 +764,8 @@ footer {
       <option>Rust</option>
       <option>FiveM</option>
       <option>CS2</option>
-      <option>Other</option>
+      <option>DarkOrbit</option>
+      <option>other</option>
     </select>
     <label>Discord Invite (optional)</label>
     <input id="dDiscord" placeholder="https://discord.gg/..." autocomplete="off">
@@ -724,6 +806,25 @@ if (localStorage.getItem("srv_theme") === "light") {
   updateThemeIcon(true);
 }
 
+// Language
+function toggleLang() {
+  document.getElementById("langSelector").classList.toggle("open");
+}
+function setLang(lang, e) {
+  e.stopPropagation();
+  document.getElementById("currentLang").textContent = lang;
+  document.querySelectorAll(".lang-dropdown div").forEach(d => d.classList.remove("active"));
+  e.target.classList.add("active");
+  document.getElementById("langSelector").classList.remove("open");
+  toast("Language set to " + lang);
+}
+document.addEventListener("click", function(e) {
+  const sel = document.getElementById("langSelector");
+  if (sel && !sel.contains(e.target)) {
+    sel.classList.remove("open");
+  }
+});
+
 // Data
 var initial = [
   {id:"starzone",name:"starzone.se",avatar:"SZ",status:"online",verified:true,pending:false,ping:12,uptime:99.9,category:"DarkOrbit",site:"https://starzone.se/",discord:"https://discord.com/invite/starzone-12-glitchworld-750806110184669213",added:Date.now()-8e7},
@@ -731,7 +832,7 @@ var initial = [
   {id:"voidlink",name:"voidlink.io",avatar:"VL",status:"online",verified:false,pending:false,ping:86,uptime:97.2,category:"FiveM",site:"#",discord:"#",added:Date.now()-4e7},
   {id:"quantum",name:"quantum.gg",avatar:"QT",status:"online",verified:true,pending:false,ping:19,uptime:99.4,category:"CS2",site:"#",discord:"#",added:Date.now()-1e8},
   {id:"ember",name:"ember.network",avatar:"EM",status:"online",verified:false,pending:false,ping:41,uptime:96.8,category:"Minecraft",site:"#",discord:"#",added:Date.now()-2e7},
-  {id:"ghostnet",name:"ghostnet.xyz",avatar:"GN",status:"offline",verified:false,pending:false,ping:null,uptime:0,category:"Other",site:"#",discord:"#",added:Date.now()-1.5e8},
+  {id:"ghostnet",name:"ghostnet.xyz",avatar:"GN",status:"offline",verified:false,pending:false,ping:null,uptime:0,category:"other",site:"#",discord:"#",added:Date.now()-1.5e8},
   {id:"rustoria",name:"rustoria.co",avatar:"RS",status:"online",verified:true,pending:false,ping:22,uptime:99.1,category:"Rust",site:"#",discord:"#",added:Date.now()-5e7},
   {id:"fivemhub",name:"fivemhub.net",avatar:"FH",status:"online",verified:false,pending:false,ping:35,uptime:97.8,category:"FiveM",site:"#",discord:"#",added:Date.now()-1e7}
 ];
