@@ -2,15 +2,15 @@
    DATA - load servers.json, state, render helpers
 ============================================================ */
 
-let nodes = [];
-let filter = "all";
-let lastScan = Date.now();
-let isLoading = false;
-let loadError = false;
+let _nodes = [];
+let _filter = "all";
+let _lastScan = Date.now();
+let _isLoading = false;
+let _loadError = false;
 
 async function loadNodes() {
-  isLoading = true;
-  loadError = false;
+  _isLoading = true;
+  _loadError = false;
 
   const grid = document.getElementById("grid");
   if (grid) {
@@ -36,8 +36,7 @@ async function loadNodes() {
       throw new Error("Invalid data format");
     }
 
-    // Basic sanitization & validation
-    nodes = data
+    _nodes = data
       .filter(function (n) {
         return n && typeof n === "object" && n.id && n.name;
       })
@@ -60,14 +59,18 @@ async function loadNodes() {
         };
       });
 
-    isLoading = false;
-    log("[agent] nodes loaded · " + nodes.length + " entries");
-    return nodes;
+    _isLoading = false;
+    log("[agent] nodes loaded · " + _nodes.length + " entries");
+
+    if (typeof render === "function") render();
+    if (typeof updateUI === "function") updateUI();
+
+    return _nodes;
   } catch (err) {
     console.error("Failed to load servers.json:", err);
-    isLoading = false;
-    loadError = true;
-    nodes = [];
+    _isLoading = false;
+    _loadError = true;
+    _nodes = [];
     log("[agent] error loading nodes");
     if (grid) {
       grid.innerHTML =
@@ -81,21 +84,30 @@ async function loadNodes() {
 }
 
 function getOnlineNodes() {
-  return nodes.filter(function (n) {
+  return _nodes.filter(function (n) {
     return n.status === "online" && !n.pending;
   });
 }
 
-window.nodes = function () { return nodes; };
+window.nodes = function () {
+  return _nodes;
+};
+
 window.filter = function (v) {
-  if (typeof v !== "undefined") filter = v;
-  return filter;
+  if (typeof v !== "undefined") _filter = v;
+  return _filter;
 };
+
 window.lastScan = function (v) {
-  if (typeof v !== "undefined") lastScan = v;
-  return lastScan;
+  if (typeof v !== "undefined") _lastScan = v;
+  return _lastScan;
 };
+
 window.loadNodes = loadNodes;
 window.getOnlineNodes = getOnlineNodes;
-window.isLoading = function () { return isLoading; };
-window.loadError = function () { return loadError; };
+window.isLoading = function () {
+  return _isLoading;
+};
+window.loadError = function () {
+  return _loadError;
+};
